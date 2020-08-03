@@ -19,19 +19,6 @@ def base_url():
     return jsonify(base_url=current_app.config['BASE_URL']), 200
 
 
-@bp.route('/courses', methods=('PATCH',))
-def update_courses():
-    url = current_app.config['BASE_URL']
-    from nottingtable.crawler.courses import get_department_list
-    from nottingtable.crawler.courses import get_textspreadsheet
-    name_to_id = get_department_list(url)
-    results = []
-    for dept_name, dept_id in name_to_id.items():
-        result = get_textspreadsheet(url, dept_id, dept_name)
-        results.append(result)
-    return jsonify(results=results), 201
-
-
 @bp.route('/individual/<format_type>', methods=('GET',))
 def get_individual_data(format_type):
     if format_type != 'json' and format_type != 'ical':
