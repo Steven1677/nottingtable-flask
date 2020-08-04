@@ -77,7 +77,7 @@ def get_individual_timetable(url, student_id, is_year1=False):
     # print(url)
     res = requests.get(url)
     if res.status_code != 200:
-        raise Exception('Student Number Not Found.')
+        raise NameError('Student ID Not Found.')
     soup = BeautifulSoup(res.text, 'lxml')
     timetable = soup.find(border='1')
 

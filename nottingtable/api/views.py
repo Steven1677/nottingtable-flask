@@ -45,25 +45,28 @@ def get_individual_data(format_type):
 
     if not student_record or force_refresh != 0:
         url = current_app.config['BASE_URL']
-        timetable_list = get_individual_timetable(url, student_id, is_year1)
+        try:
+            timetable_list = get_individual_timetable(url, student_id, is_year1)
+        except NameError:
+            return jsonify(error='Student ID/Group Invalid'), 400
         if not student_record:
             db.session.add(User(student_id=student_id, timetable=timetable_list))
             db.session.commit()
         elif force_refresh != 0:
             student_record.timetable = timetable_list
             db.session.commit()
+        student_record = User.query.filter_by(student_id=student_id).first()
 
     if format_type == 'json':
         return jsonify(timetable=student_record.timetable), 200
     elif format_type == 'ical':
         response = make_response((generate_ics(student_record.timetable, current_app.config['FIRST_MONDAY']), 200))
-        response.headers['Content-Disposition'] = 'attachment; filename={}.ics'.format(student_id)
+        response.headers['Content-Disposition'] = 'attachment; filename={}'.format('"'+student_id+'.ics"')
         return response
 
 
 @bp.route('/activity', methods=('GET',))
 def show_activity():
-
     name = request.args.get('name')
 
     if not name:

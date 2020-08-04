@@ -26,7 +26,7 @@
     <link href="{{ url_for('static', filename='starter-template.css') }}" rel="stylesheet">
 </head>
 <body>
-<nav class="navbar navbar-expand-md navbar-light fixed-top" style="background-color: #e3f2fd;">
+<nav class="navbar navbar-expand-md navbar-light fixed-top bg-white">
     <a class="navbar-brand" href="/">
         <img src="{{ url_for('static', filename='itip-logo.png') }}" width="30" height="30"
              class="d-inline-block align-top" loading="lazy">
@@ -61,7 +61,7 @@
 
 <main role="main" class="container">
 
-    <div class="starter-template">
+    <div class="instruction-content">
         {% block content %}{% endblock %}
     </div>
 

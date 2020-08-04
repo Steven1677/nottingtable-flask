@@ -2,3 +2,34 @@
 {% set active_page = "index" %}
 
 {% block title %} Year 2-4 Timetable {% endblock %}
+
+{% block content %}
+    <h1>Timetable for Year 2-4 Students</h1>
+    <p class="lead">
+        This page is only for Year 2-4 UG students.
+        <br>
+        For Year 1 UG students, please click <a href="/year-1">here</a>.
+    </p>
+    <div class="col-xl-5 col-lg-6 col-md-8 col-sm-10 mx-auto text-center form p-4">
+        <form action="/api/individual/ical" , method="GET">
+            <div class="form-group">
+                <label for="id">Student ID</label>
+                <input onkeypress="return (event.charCode!==8 && event.charCode===0 || (event.charCode >= 48 && event.charCode <= 57))"
+                       name="id" type="text" class="form-control" id="id" aria-describedby="studentID">
+                <small id="forceRefresh" class="form-text text-muted">
+                    Please only type in 8 digits Student ID.
+                    <br>
+                    e.g. 20215575
+                </small>
+
+            </div>
+            <div class="form-group form-check">
+                <input name="force-refresh" type="checkbox" class="form-check-input" id="force-refresh" value="1">
+                <label class="form-check-label" for="force-refresh">Refresh my timetable</label>
+                <small id="forceRefresh" class="form-text text-muted">Only click it if the output of your timetable has
+                    been changed.</small>
+            </div>
+            <button type="submit" class="btn btn-primary">Get Timetable</button>
+        </form>
+    </div>
+{% endblock %}
