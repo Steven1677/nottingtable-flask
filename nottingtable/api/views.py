@@ -14,11 +14,6 @@ from nottingtable.crawler.models import Course
 bp = Blueprint('api', __name__, url_prefix='/api')
 
 
-@bp.route('/base_url', methods=('GET',))
-def base_url():
-    return jsonify(base_url=current_app.config['BASE_URL']), 200
-
-
 @bp.route('/individual/<format_type>', methods=('GET',))
 def get_individual_data(format_type):
     if format_type != 'json' and format_type != 'ical':

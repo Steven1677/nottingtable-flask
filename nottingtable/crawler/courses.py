@@ -1,6 +1,5 @@
 import requests
 from bs4 import BeautifulSoup
-from selenium import webdriver
 
 from nottingtable import db
 from nottingtable.crawler.models import Course
@@ -12,25 +11,13 @@ def get_department_list(url):
     Get department List
     :param url: base url
     :return: name to id dict
-    :TODO: Replace Headless browser with PyExecJS
     """
 
     if not Department.query.first():
-        url = url + 'department.htm'
-
-        options = webdriver.FirefoxOptions()
-        options.add_argument('-headless')
-        browser = webdriver.Firefox(options=options)
-        browser.get(url)
-        dept_list_elem = browser.find_element_by_name('identifier')
-        dept_list = dept_list_elem.find_elements_by_xpath('.//*')
-        name_to_id = {}
-        for dept in dept_list:
-            name_to_id[dept.text] = dept.get_attribute('value')
-            dept_record = Department(department_id=dept.get_attribute('value'),
-                                     department_name=dept.text)
-            db.session.add(dept_record)
-        browser.quit()
+        from nottingtable.crawler.filter_parser import parse_department_list
+        name_to_id = parse_department_list(url)
+        for dept_name, dept_id in name_to_id.items():
+            db.session.add(Department(department_id=dept_id, department_name=dept_name))
         db.session.commit()
         return name_to_id
     else:
