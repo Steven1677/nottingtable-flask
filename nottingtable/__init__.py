@@ -19,15 +19,20 @@ def create_app(development_config=True):
     else:
         app.config.from_object(config.ProductionConfig)
 
-    # initialize Flask-SQLAlchemy and the init-db command
+    # initialize Flask-SQLAlchemy and db related commands
     db.init_app(app)
     app.cli.add_command(init_db_command)
     app.cli.add_command(update_course_db)
 
     # apply the blueprints to the app
     from nottingtable import api
+    from nottingtable import front_page
 
+    app.register_blueprint(front_page.bp)
     app.register_blueprint(api.bp)
+
+    # make / to be handled by front_page.index
+    app.add_url_rule("/", endpoint='index')
 
     return app
 

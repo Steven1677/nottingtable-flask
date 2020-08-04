@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>{% block title %}{% endblock %} - Nottingtable</title>
+    <!-- Bootstrap core CSS -->
+    <link href="{{ url_for('static', filename='bootstrap.css') }}" rel="stylesheet">
+
+    <style>
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        @media (min-width: 768px) {
+            .bd-placeholder-img-lg {
+                font-size: 3.5rem;
+            }
+        }
+    </style>
+    <!-- Custom styles for this template -->
+    <link href="{{ url_for('static', filename='starter-template.css') }}" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-expand-md navbar-light fixed-top" style="background-color: #e3f2fd;">
+    <a class="navbar-brand" href="/">
+        <img src="{{ url_for('static', filename='itip-logo.png') }}" width="30" height="30"
+             class="d-inline-block align-top" loading="lazy">
+        Nottingtable
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
+            aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse">
+        {% set navigation_bar = [
+            ('/', 'index', 'Year 2-4'),
+            ('/year-1', 'year-1', 'Year 1'),
+        ] -%}
+        {% set active_page = active_page -%}
+        <ul class="navbar-nav mr-auto">
+            {% for href, id, caption in navigation_bar %}
+                <li{% if id == active_page %} class="nav-item active" {% else %} class="nav-item" {% endif %}><a href="{{ href|e }}" class="nav-link">{{ caption|e }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ml-auto">
+            <li {% if active_page == 'api' %} class="nav-item active" {% else %} class="nav-item" {% endif %}>
+                <a class="nav-link" href="/public-api">Public API</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<main role="main" class="container">
+
+    <div class="starter-template">
+        {% block content %}{% endblock %}
+    </div>
+
+</main><!-- /.container -->
+<script src="{{ url_for('static', filename='jquery-3.5.1.slim.min.js') }}"></script>
+<script src="{{ url_for('static', filename='bootstrap.bundle.js') }}"></script>
+</body>
+</html>
