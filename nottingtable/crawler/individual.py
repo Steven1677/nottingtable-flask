@@ -150,7 +150,7 @@ def generate_ics(timetable, start_week_monday):
         end_time = arrow.get(course['End'], 'H:mm')
         for week in week_iterator:
             course_date = start_week_monday.replace(tzinfo='+08:00') \
-                .shift(weeks=+(week - 1), days=+weekday_to_day[course['Weekday']])
+                .shift(weeks=+(week - 1), days=+weekday_to_day[course['Day']])
             e = Event(name=course_info.activity + ' - ' + course_info.module,
                       begin=course_date.shift(hours=start_time.hour, minutes=start_time.minute),
                       end=course_date.shift(hours=end_time.hour, minutes=end_time.minute),
