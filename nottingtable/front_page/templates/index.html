@@ -10,16 +10,15 @@
         <br>
         For Year 1 UG students, please click <a href="/year-1">here</a>.
     </p>
-    <div class="col-xl-5 col-lg-6 col-md-8 col-sm-10 mx-auto text-center form p-4">
+    <div class="col-xl-5 col-lg-6 col-md-8 col-sm-10 mx-auto text-center form p-5">
         <form action="/api/individual/ical" , method="GET">
             <div class="form-group">
-                <label for="id">Student ID</label>
-                <input onkeypress="return (event.charCode!==8 && event.charCode===0 || (event.charCode >= 48 && event.charCode <= 57))"
-                       name="id" type="text" class="form-control" id="id" aria-describedby="studentID">
+                <label for="id" class="invisible">Student ID</label>
+                <input pattern="\d{8}" required name="id" type="text" class="form-control" id="id" aria-describedby="studentID" placeholder="Type Student ID Here">
                 <small id="forceRefresh" class="form-text text-muted">
                     Please only type in 8 digits Student ID.
                     <br>
-                    e.g. 20215575
+                    e.g. 20120000
                 </small>
 
             </div>

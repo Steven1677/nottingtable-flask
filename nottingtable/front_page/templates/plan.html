@@ -1,21 +1,23 @@
 {% extends 'base.html' %}
-{% set active_page = "year-1" %}
+{% set active_page = "plan" %}
 
-{% block title %} Year 1 Timetable {% endblock %}
+{% block title %} Master Timetable via Plan {% endblock %}
 
 {% block content %}
-    <h1>Timetable for Year 1 Students</h1>
+    <h1>Master Timetable via Plan</h1>
     <p class="lead">
-        This page is only for Year 1 UG students.
+        This page is only for Master Students who can not get timetable via student ID.
         <br>
-        For Year 2-4 UG students, please click <a href="/">here</a>.
+        Select Your Plan Below:
     </p>
-    <div class="col-xl-5 col-lg-6 col-md-8 col-sm-10 mx-auto text-center form p-4">
-        <form action="/api/individual/ical" method="GET">
-            <div class="form-group">
-                <select required class="selectpicker" data-width="auto" data-live-search="true" title="Select Your Group Here" name="group">
-                    {% for group in group_list %}
-                        <option>{{ group.group }}</option>
+    <div class="form p-5">
+        <form action="/api/plan/ical" , method="GET">
+            <div class="form-group row">
+                <select id="plan" class="selectpicker form-control" data-width="auto" data-live-search="true"
+                        title="Select Your Plan Here"
+                        name="plan">
+                    {% for plan in plan_list %}
+                        <option value="{{ plan.plan_id }}">{{ plan.plan_name }}</option>
                     {% endfor %}
                 </select>
             </div>

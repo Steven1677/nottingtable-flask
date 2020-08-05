@@ -2,6 +2,7 @@ from flask import Blueprint
 from flask import render_template
 
 from nottingtable.crawler.models import Y1Group
+from nottingtable.crawler.models import MasterPlan
 
 bp = Blueprint('front', __name__, template_folder='templates')
 
@@ -20,6 +21,17 @@ def show_year_1():
 
     group_list = Y1Group.query.all()
     return render_template('year-1.html', group_list=group_list)
+
+
+@bp.route('/plan', methods=('GET',))
+def show_plan():
+    """
+    Render page for master students
+    :return: rendered page with selection list
+    """
+
+    plan_list = MasterPlan.query.all()
+    return render_template('plan.html', plan_list=plan_list)
 
 
 @bp.route('/public-api', methods=('GET',))

@@ -6,24 +6,8 @@
     <!-- Bootstrap core CSS -->
     <link href="{{ url_for('static', filename='bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='bootstrap-select.min.css') }}" rel="stylesheet">
-    <style>
-        .bd-placeholder-img {
-            font-size: 1.125rem;
-            text-anchor: middle;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-        }
-
-        @media (min-width: 768px) {
-            .bd-placeholder-img-lg {
-                font-size: 3.5rem;
-            }
-        }
-    </style>
     <!-- Custom styles for this template -->
-    <link href="{{ url_for('static', filename='starter-template.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='forms.css') }}" rel="stylesheet">
 </head>
 <body>
 <nav class="navbar navbar-expand-md navbar-light fixed-top bg-white">
@@ -32,15 +16,16 @@
              class="d-inline-block align-top" loading="lazy">
         Nottingtable
     </a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
-            aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar"
+            aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
 
-    <div class="collapse navbar-collapse">
+    <div id="navbar" class="collapse navbar-collapse">
         {% set navigation_bar = [
             ('/', 'index', 'Year 2-4'),
             ('/year-1', 'year-1', 'Year 1'),
+            ('/plan', 'plan', 'Master')
         ] -%}
         {% set active_page = active_page -%}
         <ul class="navbar-nav mr-auto">
