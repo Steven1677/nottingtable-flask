@@ -4,8 +4,8 @@
     <meta charset="utf-8">
     <title>{% block title %}{% endblock %} - Nottingtable</title>
     <!-- Bootstrap core CSS -->
-    <link href="{{ url_for('static', filename='bootstrap.css') }}" rel="stylesheet">
-
+    <link href="{{ url_for('static', filename='bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='bootstrap-select.min.css') }}" rel="stylesheet">
     <style>
         .bd-placeholder-img {
             font-size: 1.125rem;
@@ -67,6 +67,7 @@
 
 </main><!-- /.container -->
 <script src="{{ url_for('static', filename='jquery-3.5.1.slim.min.js') }}"></script>
-<script src="{{ url_for('static', filename='bootstrap.bundle.js') }}"></script>
+<script src="{{ url_for('static', filename='bootstrap.bundle.min.js') }}"></script>
+<script src="{{ url_for('static', filename='bootstrap-select.min.js') }}"></script>
 </body>
 </html>

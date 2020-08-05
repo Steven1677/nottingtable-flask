@@ -13,13 +13,12 @@
     <div class="col-xl-5 col-lg-6 col-md-8 col-sm-10 mx-auto text-center form p-4">
         <form action="/api/individual/ical" , method="GET">
             <div class="form-group">
-                <label for="id">Group Name</label>
-                <input name="group" type="text" class="form-control" id="id" aria-describedby="studentID">
-                <small id="forceRefresh" class="form-text text-muted">
-                    Please refer to the group name on your PDF timetable carefully. <br>
-                    Spaces do matter!
-                </small>
-
+                <label for="id">Group Name: </label>
+                <select class="selectpicker" data-live-search="true" title="Select Your Group Here" name="group">
+                    {% for group in group_list %}
+                        <option>{{ group.group }}</option>
+                    {% endfor %}
+                </select>
             </div>
             <div class="form-group form-check">
                 <input name="force-refresh" type="checkbox" class="form-check-input" id="force-refresh" value="1">
