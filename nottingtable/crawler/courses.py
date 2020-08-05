@@ -34,7 +34,7 @@ def get_textspreadsheet(url, dept_id, dept_name):
     :param url: base url
     :param dept_id: department id str
     :param dept_name: department name str
-    :return: None
+    :return: department collection status string
     """
     exec_dept_list = ['Central']
     if dept_name in exec_dept_list:
@@ -69,8 +69,8 @@ def get_textspreadsheet(url, dept_id, dept_name):
                 if temp_dict['Name of Type'].lower() in exec_type_list:
                     continue
                 course_list.append(temp_dict)
-        if not course_list:
-            return dept_name + ' is empty!'
+    if not course_list:
+        return dept_name + ' is empty!'
     for course in course_list:
         course_record = Course(activity=course['Activity'],
                                module=course['Module'],

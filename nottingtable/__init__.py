@@ -64,13 +64,10 @@ def update_course_db():
     from nottingtable.crawler.courses import get_department_list
     from nottingtable.crawler.courses import get_textspreadsheet
     name_to_id = get_department_list(url)
-    results = []
     for dept_name, dept_id in name_to_id.items():
         result = get_textspreadsheet(url, dept_id, dept_name)
-        results.append(result)
-    click.echo('Courses information re-crawled:')
-    for result in results:
         click.echo(result)
+    click.echo('Courses Updated!')
 
 
 @click.command("update-departments")
@@ -101,4 +98,5 @@ def update_master_plan_list():
     for plan_name, plan_id in name_to_id.items():
         db.session.add(MasterPlan(plan_id=plan_id, plan_name=plan_name))
         click.echo(plan_name + ': ' + plan_id)
+    db.session.commit()
     click.echo('Master Plan List Updated!')

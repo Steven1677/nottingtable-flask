@@ -113,9 +113,10 @@ def get_individual_timetable(url, student_id, is_year1=False):
                 time_period_index = time_period_index + int(td['colspan'])
                 end_time = periods[time_period_index]
 
-                module = Course.query.filter_by(activity=activity_id).first().module
+                module = Course.query.filter_by(activity=activity_id).first()
                 if not module:
-                    raise Exception('Course Database Not Initialized!')
+                    raise Exception('Course Not Found!')
+                module = module.module
 
                 timetable_list.append({
                     'Activity': activity_id,
@@ -126,7 +127,7 @@ def get_individual_timetable(url, student_id, is_year1=False):
                     'Start': start_time,
                     'End': end_time,
                     'Weeks': weeks,
-                    'Weekday': current_weekday
+                    'Day': current_weekday
                 })
     return timetable_list
 
@@ -141,6 +142,8 @@ def generate_ics(timetable, start_week_monday):
     weekday_to_day = {'Mon': 0, 'Tue': 1, 'Wed': 2, 'Thu': 3, 'Fri': 4, 'Sat': 5, 'Sun': 6}
     ics_file = Calendar()
     for course in timetable:
+        # course is from individual webpage
+        # course_info is from course page cached in the database
         week_iterator = weeks_generator(course['Weeks'])
         course_info = Course.query.filter_by(activity=course['Activity']).first()
         start_time = arrow.get(course['Start'], 'H:mm')
@@ -148,7 +151,7 @@ def generate_ics(timetable, start_week_monday):
         for week in week_iterator:
             course_date = start_week_monday.replace(tzinfo='+08:00') \
                 .shift(weeks=+(week - 1), days=+weekday_to_day[course['Weekday']])
-            e = Event(name=course_info.module,
+            e = Event(name=course_info.activity + ' - ' + course_info.module,
                       begin=course_date.shift(hours=start_time.hour, minutes=start_time.minute),
                       end=course_date.shift(hours=end_time.hour, minutes=end_time.minute),
                       location=course['Room'],
