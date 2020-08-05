@@ -23,6 +23,8 @@ def create_app(development_config=True):
     db.init_app(app)
     app.cli.add_command(init_db_command)
     app.cli.add_command(update_course_db)
+    app.cli.add_command(update_department_list)
+    app.cli.add_command(update_master_plan_list)
 
     # apply the blueprints to the app
     from nottingtable import api
@@ -54,7 +56,7 @@ def init_db_command():
 @click.command("update-courses")
 @with_appcontext
 def update_course_db():
-    """Re-get all courses information"""
+    """Re-get courses information"""
     from nottingtable.crawler.models import Course
     Course.__table__.drop(db.engine)
     Course.__table__.create(db.engine)
@@ -69,3 +71,34 @@ def update_course_db():
     click.echo('Courses information re-crawled:')
     for result in results:
         click.echo(result)
+
+
+@click.command("update-departments")
+@with_appcontext
+def update_department_list():
+    """Re-get departments information"""
+    from nottingtable.crawler.models import Department
+    Department.__table__.drop(db.engine)
+    Department.__table__.create(db.engine)
+    url = current_app.config['BASE_URL']
+    from nottingtable.crawler.courses import get_department_list
+    name_to_id = get_department_list(url)
+    for k, v in name_to_id.items():
+        click.echo(k + ': ' + v)
+    click.echo('Department List Updated!')
+
+
+@click.command("update-master-plans")
+@with_appcontext
+def update_master_plan_list():
+    """Re-get master plans information"""
+    from nottingtable.crawler.models import MasterPlan
+    MasterPlan.__table__.drop(db.engine)
+    MasterPlan.__table__.create(db.engine)
+    url = current_app.config['BASE_URL']
+    from nottingtable.crawler.filter_parser import parse_pgt_programmearray
+    name_to_id = parse_pgt_programmearray(url)
+    for plan_name, plan_id in name_to_id.items():
+        db.session.add(MasterPlan(plan_id=plan_id, plan_name=plan_name))
+        click.echo(plan_name + ': ' + plan_id)
+    click.echo('Master Plan List Updated!')

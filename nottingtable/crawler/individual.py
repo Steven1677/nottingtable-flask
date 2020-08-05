@@ -69,12 +69,12 @@ def get_individual_timetable(url, student_id, is_year1=False):
     :return: timetable dict for the student
     """
     if is_year1:
-        url = url + 'reporting/Individual;Student+Sets;name;{}' \
-                    '?template=Student+Set+Individual&weeks=23-52&days=1-7&periods=1-32'.format(student_id)
+        url = url + 'reporting/Individual;Student+Sets;name;{}?template=Student+Set+Individual' \
+                    '&weeks=1-52&days=1-7&periods=1-32'.format(student_id)
     else:
         url = url + 'reporting/individual;Student+Sets;id;{}?template=Student+Set+Individual' \
                     '&weeks=1-52&days=1-7&periods=1-32'.format(student_id)
-    # print(url)
+
     res = requests.get(url)
     if res.status_code != 200:
         raise NameError('Student ID Not Found.')

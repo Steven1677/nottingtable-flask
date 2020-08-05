@@ -53,3 +53,12 @@ class User(db.Model):
 
     def __repr__(self):
         return '<User %r>' % self.student_id
+
+
+class MasterPlan(db.Model):
+    id = db.Column(db.INTEGER, primary_key=True)
+    plan_id = db.Column(db.String(50), unique=True, nullable=False)
+    plan_name = db.Column(db.String(256), nullable=False)
+
+    def __repr__(self):
+        return '<MPlan %r>' % self.plan_id
