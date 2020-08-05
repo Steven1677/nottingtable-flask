@@ -62,3 +62,11 @@ class MasterPlan(db.Model):
 
     def __repr__(self):
         return '<MPlan %r>' % self.plan_id
+
+
+class Y1Group(db.Model):
+    id = db.Column(db.INTEGER, primary_key=True)
+    group = db.Column(db.String(50), unique=True, nullable=False)
+
+    def __repr__(self):
+        return '<Y1 Group %r>' % self.group

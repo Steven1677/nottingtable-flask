@@ -20,3 +20,4 @@ class DevelopmentConfig(Config):
 
     BASE_URL = 'http://timetablingunnc.nottingham.ac.uk:8005/'
     FIRST_MONDAY = arrow.get('2019-09-16')  # YYYY-MM-DD
+    YEAR1_PDF_URL = 'https://www.nottingham.edu.cn/en/academicservices/documents/year-1-student-timetable-1920-spring-semester-20200429v4.pdf'

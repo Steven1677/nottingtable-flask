@@ -25,6 +25,7 @@ def create_app(development_config=True):
     app.cli.add_command(update_course_db)
     app.cli.add_command(update_department_list)
     app.cli.add_command(update_master_plan_list)
+    app.cli.add_command(update_year1_group)
 
     # apply the blueprints to the app
     from nottingtable import api
@@ -100,3 +101,18 @@ def update_master_plan_list():
         click.echo(plan_name + ': ' + plan_id)
     db.session.commit()
     click.echo('Master Plan List Updated!')
+
+
+@click.command("update-year1-groups")
+@with_appcontext
+def update_year1_group():
+    """Re-get Year 1 group names"""
+    from nottingtable.crawler.models import Y1Group
+    Y1Group.__table__.drop(db.engine)
+    Y1Group.__table__.create(db.engine)
+    from nottingtable.crawler.year1_group import get_year1_group_list
+    group_names = get_year1_group_list()
+    for group_name in group_names:
+        db.session.add(Y1Group(group=group_name))
+    db.session.commit()
+    click.echo('Y1 Group List Updated!')
