@@ -60,3 +60,25 @@ def parse_pgt_programmearray(url):
         name_to_id[match[1]] = match[2]
 
     return name_to_id
+
+
+def parse_modulearray(url):
+    """
+    Parse filter.js modulearray
+    :param url: base url for timetabling system
+    :return: module name to module id dict
+    """
+
+    # get filter.js file
+    source = get_filterjs(url)
+
+    name_to_id = {}
+
+    # e.g. modulearray[0] [0] = "ABEE/3029/01";
+    matches = re.findall(r'modulearray\[(\d{1,4})\] \[0\] = "(.*)";\s+'
+                         r'modulearray\[\1\] \[1\] = ".*";\s+'
+                         r'modulearray\[\1\] \[2\] = "(.*)"', source)
+    for match in matches:
+        name_to_id[match[1]] = match[2]
+
+    return name_to_id
