@@ -1,34 +1,24 @@
 {% extends 'base.html' %}
-{% set active_page = "index" %}
 
-{% block title %} Year 2-4 Timetable {% endblock %}
+{% block title %} Home {% endblock %}
 
 {% block content %}
-    <h1>Timetable for Year 2-4 Students</h1>
-    <p class="lead">
-        This page is only for Year 2-4 UG students.
-        <br>
-        For Year 1 UG students, please click <a href="/year-1">here</a>.
-    </p>
-    <div class="col-xl-5 col-lg-6 col-md-8 col-sm-10 mx-auto text-center form p-5">
-        <form action="/api/individual/ical" , method="GET">
-            <div class="form-group">
-                <label for="id" class="invisible">Student ID</label>
-                <input pattern="\d{8}" required name="id" type="text" class="form-control" id="id" aria-describedby="studentID" placeholder="Type Student ID Here">
-                <small id="forceRefresh" class="form-text text-muted">
-                    Please only type in 8 digits Student ID.
-                    <br>
-                    e.g. 20120000
-                </small>
-
-            </div>
-            <div class="form-group form-check">
-                <input name="force-refresh" type="checkbox" class="form-check-input" id="force-refresh" value="1">
-                <label class="form-check-label" for="force-refresh">Refresh my timetable</label>
-                <small id="forceRefresh" class="form-text text-muted">Only click it if the output of your timetable has
-                    been changed.</small>
-            </div>
-            <button type="submit" class="btn btn-primary">Get Timetable</button>
-        </form>
+    <div class="card text-center">
+        <div class="card-header">
+            Timetable to Calendar
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">Choose your category</h5>
+            <p class="card-text">Due to implementation behind <a href="http://timetablingunnc.nottingham.ac.uk:8005/">Timetabling
+                Office</a>,
+                not all students can get timetable via student ID.</p>
+            <p class="card-text">We are sorry to bother you make one more choice.</p>
+            <a href="/year-1" class="btn btn-primary">Year 1 Students via Group Name</a>
+            <a href="/year-24" class="btn btn-primary">Year 2-4 Students via Student ID</a>
+            <a href="/plan" class="btn btn-primary">Master Students via Plan Name</a>
+        </div>
+        <div class="card-footer text-muted">
+            Powered by Flask
+        </div>
     </div>
 {% endblock %}

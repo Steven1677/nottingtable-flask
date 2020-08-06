@@ -4,28 +4,36 @@
 {% block title %} Year 1 Timetable {% endblock %}
 
 {% block content %}
-    <h1>Timetable for Year 1 Students</h1>
-    <p class="lead">
-        This page is only for Year 1 UG students.
-        <br>
-        For Year 2-4 UG students, please click <a href="/">here</a>.
-    </p>
-    <div class="col-xl-5 col-lg-6 col-md-8 col-sm-10 mx-auto text-center form p-4">
-        <form action="/api/individual/ical" method="GET">
-            <div class="form-group">
-                <select required class="selectpicker" data-width="auto" data-live-search="true" title="Select Your Group Here" name="group">
-                    {% for group in group_list %}
-                        <option>{{ group.group }}</option>
-                    {% endfor %}
-                </select>
+    <div class="card text-center">
+        <div class="card-header">
+            Year 1 - Timetable to Calendar
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">Select your group</h5>
+            <div class="form">
+                <form action="/api/individual/ical" method="GET">
+                    <div class="form-group">
+                        <select required class="selectpicker" data-width="auto" data-live-search="true"
+                                title="Select Your Group Here" name="group">
+                            {% for group in group_list %}
+                                <option>{{ group.group }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group form-check">
+                        <input name="force-refresh" type="checkbox" class="form-check-input" id="force-refresh"
+                               value="1">
+                        <label class="form-check-label" for="force-refresh">Refresh my timetable</label>
+                        <small id="forceRefresh" class="form-text text-muted">Only click it if the your
+                            timetable has
+                            been changed.</small>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Get Timetable</button>
+                </form>
             </div>
-            <div class="form-group form-check">
-                <input name="force-refresh" type="checkbox" class="form-check-input" id="force-refresh" value="1">
-                <label class="form-check-label" for="force-refresh">Refresh my timetable</label>
-                <small id="forceRefresh" class="form-text text-muted">Only click it if the output of your timetable has
-                    been changed.</small>
-            </div>
-            <button type="submit" class="btn btn-primary">Get Timetable</button>
-        </form>
+        </div>
+        <div class="card-footer text-muted">
+            Powered by Flask
+        </div>
     </div>
 {% endblock %}
