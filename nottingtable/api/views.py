@@ -3,6 +3,7 @@ from flask import current_app
 from flask import jsonify
 from flask import request
 from flask import make_response
+from flask import send_file
 
 from nottingtable import db
 from nottingtable.crawler.individual import validate_student_id
@@ -49,6 +50,7 @@ def output_timetable(format_type, timetable, ics_func, ics_name):
     elif format_type == 'ical':
         response = make_response((ics_func(timetable, current_app.config['FIRST_MONDAY']), 200))
         response.headers['Content-Disposition'] = 'attachment; filename={}'.format('"' + ics_name + '.ics"')
+        response.headers['Content-Type'] = 'text/calendar charset=utf-8'
         return response
 
 
