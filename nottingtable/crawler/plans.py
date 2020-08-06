@@ -61,7 +61,7 @@ def generate_ics(course_list, start_week_monday):
     :return: ics file
     """
 
-    weekday_to_day = {'Mon': 0, 'Tue': 1, 'Wed': 2, 'Thu': 3, 'Fri': 4, 'Sat': 5, 'Sun': 6}
+    weekday_to_day = {'Monday': 0, 'Tuesday': 1, 'Wednesday': 2, 'Thursday': 3, 'Friday': 4, 'Saturday': 5, 'Sunday': 6}
 
     ics_file = Calendar()
     for course in course_list:
@@ -72,7 +72,7 @@ def generate_ics(course_list, start_week_monday):
 
         for week in week_iterator:
             course_date = start_week_monday.replace(tzinfo='+08:00') \
-                .shift(weeks=+(week - 1), days=+weekday_to_day[course['Weekday']])
+                .shift(weeks=+(week - 1), days=+weekday_to_day[course['Day']])
             e = Event(name=course['Activity'] + ' - ' + course['Module'],
                       begin=course_date.shift(hours=start_time.hour, minutes=start_time.minute),
                       end=course_date.shift(hours=end_time.hour, minutes=end_time.minute),
