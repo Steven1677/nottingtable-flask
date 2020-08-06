@@ -115,6 +115,7 @@ def get_individual_timetable(url, student_id, is_year1=False):
 
                 module = Course.query.filter_by(activity=activity_id).first()
                 if not module:
+                    # TODO: Hot Update via course_id
                     raise Exception('Course Not Found!')
                 module = module.module
 
