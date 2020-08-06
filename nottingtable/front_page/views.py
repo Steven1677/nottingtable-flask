@@ -11,6 +11,7 @@ bp = Blueprint('front', __name__, template_folder='templates')
 def index():
     return render_template('index.html')
 
+
 @bp.route('/year-24', methods=('GET',))
 def show_year_24():
     return render_template('year-24.html')
