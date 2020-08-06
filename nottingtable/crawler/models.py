@@ -70,3 +70,12 @@ class Y1Group(db.Model):
 
     def __repr__(self):
         return '<Y1 Group %r>' % self.group
+
+
+class Module(db.Model):
+    id = db.Column(db.INTEGER, primary_key=True)
+    module_name = db.Column(db.String(20), nullable=False)
+    module_id = db.Column(db.String(20), nullable=False)
+
+    def __repr__(self):
+        return '<%r %r>' % self.module_name, self.module_id

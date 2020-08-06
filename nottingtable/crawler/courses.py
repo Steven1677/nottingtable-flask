@@ -74,7 +74,7 @@ def get_textspreadsheet(url, dept_id, dept_name):
     for course in course_list:
         course_record = Course(activity=course['Activity'],
                                module=course['Module'],
-                               type=course['Size'],
+                               type=course['Name of Type'],
                                day=course['Day'],
                                start=course['Start'],
                                end=course['End'],
