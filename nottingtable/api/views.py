@@ -124,3 +124,15 @@ def show_activity():
     activity_records = Course.query.filter_by(activity=name).all()
 
     return jsonify([i.serialize for i in activity_records]), 200
+
+
+@bp.route('/module', methods=('GET',))
+def show_module():
+    name = request.args.get('name')
+
+    if not name:
+        return jsonify(error='Module Name Not Provided'), 400
+
+    module_records = Course.query.filter_by(module=name).all()
+
+    return jsonify([i.serialize for i in module_records]), 200

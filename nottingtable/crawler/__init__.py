@@ -1,6 +1,6 @@
 import click
 from nottingtable import db
-from nottingtable import current_app
+from flask import current_app
 
 
 def update_course_db():
