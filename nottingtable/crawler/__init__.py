@@ -10,10 +10,10 @@ def update_course_db():
     Course.__table__.create(db.engine)
     url = current_app.config['BASE_URL']
     from nottingtable.crawler.courses import get_department_list
-    from nottingtable.crawler.courses import get_textspreadsheet
+    from nottingtable.crawler.courses import get_department_courses
     name_to_id = get_department_list(url)
     for dept_name, dept_id in name_to_id.items():
-        result = get_textspreadsheet(url, dept_id, dept_name)
+        result = get_department_courses(url, dept_id, dept_name)
         click.echo(result)
     click.echo('Courses Updated!')
 

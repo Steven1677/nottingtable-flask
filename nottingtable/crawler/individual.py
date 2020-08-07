@@ -4,6 +4,9 @@ from bs4 import BeautifulSoup
 from ics import Calendar, Event
 import arrow
 
+from nottingtable import db
+from nottingtable.crawler.courses import add_course
+from nottingtable.crawler.modules import get_module_activity
 from nottingtable.crawler.models import Course
 
 
@@ -115,8 +118,12 @@ def get_individual_timetable(url, student_id, is_year1=False):
 
                 module = Course.query.filter_by(activity=activity_id).first()
                 if not module:
-                    # TODO: Hot Update via course_id
-                    raise Exception('Course Not Found!')
+                    # For a few newly added course, use hot update via Courses API
+                    # But re-craw courses table is more recommended
+                    new_course = get_module_activity(re.match(r'(https?://.*?/)', url).group(1), course_id, activity_id)
+                    new_course_record = add_course(new_course)
+                    db.session.commit()
+                    module = new_course_record
                 module = module.module
 
                 timetable_list.append({

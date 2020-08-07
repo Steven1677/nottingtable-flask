@@ -1,7 +1,5 @@
-import requests
-from bs4 import BeautifulSoup
-
 from nottingtable import db
+from nottingtable.crawler.text_spread_sheet import extract_text_spread_sheet
 from nottingtable.crawler.models import Course
 from nottingtable.crawler.models import Department
 
@@ -28,7 +26,22 @@ def get_department_list(url):
         return name_to_id
 
 
-def get_textspreadsheet(url, dept_id, dept_name):
+def add_course(course_dict):
+    course_record = Course(activity=course_dict['Activity'],
+                           module=course_dict['Module'],
+                           type=course_dict['Name of Type'],
+                           day=course_dict['Day'],
+                           start=course_dict['Start'],
+                           end=course_dict['End'],
+                           duration=course_dict['Duration'],
+                           staff=course_dict['Staff'],
+                           room=course_dict['Room'],
+                           weeks=course_dict['Weeks'])
+    db.session.add(course_record)
+    return course_record
+
+
+def get_department_courses(url, dept_id, dept_name):
     """
     Get department course table
     :param url: base url
@@ -42,46 +55,17 @@ def get_textspreadsheet(url, dept_id, dept_name):
     exec_type_list = ['booking', 'wrb-web bookings', 'wrb-provisional', 'booking']
     url = url + 'reporting/TextSpreadsheet;department;id;{}%0D%0A?days=1-7&weeks=1-52&periods=1-32' \
                 '&template=SWSCUST+department+TextSpreadsheet&height=100&week=100'.format(dept_id)
-    resp = requests.get(url)
-    if resp.status_code != 200:
-        raise Exception('Course not Found')
-    courses = resp.text
-    courses_soup = BeautifulSoup(courses, 'lxml')
-    courses_tables = courses_soup.find_all(border='1')
-    fields = []
-    course_list = []
-    for courses_table in courses_tables:
-        is_header = True
-        for tr in courses_table('tr'):
-            if is_header and not fields:
-                for td in tr('td'):
-                    fields.append(td.get_text())
-                is_header = False
-            elif is_header:
-                is_header = False
-                continue
-            else:
-                course_info = []
-                for td in tr('td'):
-                    content = td.get_text().replace('\xa0', '').replace('  ', ' ')
-                    course_info.append(content)
-                temp_dict = dict(zip(fields, course_info))
-                if temp_dict['Name of Type'].lower() in exec_type_list:
-                    continue
-                course_list.append(temp_dict)
+
+    def exclude_filter(course_dict):
+        return course_dict['Name of Type'].lower() in exec_type_list
+    try:
+        course_list = extract_text_spread_sheet(url, exclude_filter)
+    except NameError:
+        return dept_name + ' CRAWLING FAILED !!!'
+
     if not course_list:
         return dept_name + ' is empty!'
     for course in course_list:
-        course_record = Course(activity=course['Activity'],
-                               module=course['Module'],
-                               type=course['Name of Type'],
-                               day=course['Day'],
-                               start=course['Start'],
-                               end=course['End'],
-                               duration=course['Duration'],
-                               staff=course['Staff'],
-                               room=course['Room'],
-                               weeks=course['Weeks'])
-        db.session.add(course_record)
+        add_course(course)
     db.session.commit()
     return dept_name + ' is finished.'
