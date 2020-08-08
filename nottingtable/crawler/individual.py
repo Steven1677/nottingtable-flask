@@ -1,3 +1,4 @@
+from datetime import timedelta
 import re
 import requests
 from bs4 import BeautifulSoup
@@ -159,10 +160,11 @@ def generate_ics(timetable, start_week_monday):
         for week in week_iterator:
             course_date = start_week_monday.replace(tzinfo='+08:00') \
                 .shift(weeks=+(week - 1), days=+weekday_to_day[course['Day']])
-            e = Event(name=course_info.activity + ' - ' + course_info.module,
+            e = Event(name=course_info.module + ' - ' + course_info.activity,
                       begin=course_date.shift(hours=start_time.hour, minutes=start_time.minute),
                       end=course_date.shift(hours=end_time.hour, minutes=end_time.minute),
                       location=course['Room'],
-                      description=course_info.type)
+                      description='Type: ' + course_info.type + '\r\n' + 'Staff: ' + course_info.staff,
+                      )
             ics_file.events.add(e)
     return str(ics_file)
