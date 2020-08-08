@@ -3,7 +3,6 @@ from flask import current_app
 from flask import jsonify
 from flask import request
 from flask import make_response
-from flask import send_file
 
 from nottingtable import db
 from nottingtable.crawler.individual import validate_student_id

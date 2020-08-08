@@ -166,4 +166,3 @@ def generate_ics(timetable, start_week_monday):
                       description=course_info.type)
             ics_file.events.add(e)
     return str(ics_file)
-
