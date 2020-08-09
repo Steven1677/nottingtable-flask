@@ -1,3 +1,6 @@
+from datetime import timedelta
+import arrow
+
 from flask import Blueprint
 from flask import current_app
 from flask import jsonify
@@ -25,14 +28,34 @@ def add_or_update(record, key, value, force_refresh):
     :param record: a User record
     :return: updated record
     """
+
     if not record:
         db.session.add(User(student_id=key, timetable=value))
         db.session.commit()
     elif force_refresh != 0:
         record.timetable = value
+        record.timestamp = arrow.utcnow().datetime
         db.session.commit()
     record = User.query.filter_by(student_id=key).first()
     return record
+
+
+def get_record(student_id, force_refresh):
+    """
+    Get record from cache database
+    :param student_id: cache identifier
+    :param force_refresh: force_refresh flag
+    :return: student_record and force_refresh
+    """
+    student_record = User.query.filter_by(student_id=student_id).first()
+
+    # cache life time check
+    if student_record:
+        last_update_time = arrow.get(student_record.timestamp)
+        if arrow.utcnow() - last_update_time > timedelta(days=current_app.config['CACHE_LIFE']):
+            force_refresh = 1
+
+    return student_record, force_refresh
 
 
 def output_timetable(format_type, record, ics_func, ics_name):
@@ -75,7 +98,7 @@ def get_individual_data(format_type):
 
     force_refresh = request.args.get('force-refresh') or 0
 
-    student_record = User.query.filter_by(student_id=student_id).first()
+    student_record, force_refresh = get_record(student_id, force_refresh)
 
     if not student_record or force_refresh != 0:
         url = current_app.config['BASE_URL']
@@ -101,7 +124,7 @@ def get_plan_data(format_type):
 
     force_refresh = request.args.get('force-refresh') or 0
 
-    student_record = User.query.filter_by(student_id=plan_id).first()
+    student_record, force_refresh = get_record(plan_id, force_refresh)
 
     if not student_record or force_refresh != 0:
         url = current_app.config['BASE_URL']
