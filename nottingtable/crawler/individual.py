@@ -1,8 +1,8 @@
-from datetime import timedelta
 import re
 import requests
+from hashlib import md5
 from bs4 import BeautifulSoup
-from ics import Calendar, Event
+from icalendar import Calendar, Event, Alarm
 import arrow
 
 from nottingtable import db
@@ -141,16 +141,18 @@ def get_individual_timetable(url, student_id, is_year1=False):
     return timetable_list
 
 
-def generate_ics(timetable, start_week_monday):
+def generate_ics(record, start_week_monday):
     """
     Pair course activity and course info
-    :param timetable: timetable list from individual web page
+    :param record: timetable list from individual web page
     :param start_week_monday: arrow object
     :return: ics_file
     """
     weekday_to_day = {'Mon': 0, 'Tue': 1, 'Wed': 2, 'Thu': 3, 'Fri': 4, 'Sat': 5, 'Sun': 6}
     ics_file = Calendar()
-    for course in timetable:
+    ics_file.add('version', '2.0')
+    ics_file.add('prodid', 'Nottingtable')
+    for course in record.timetable:
         # course is from individual webpage
         # course_info is from course page cached in the database
         week_iterator = weeks_generator(course['Weeks'])
@@ -158,13 +160,20 @@ def generate_ics(timetable, start_week_monday):
         start_time = arrow.get(course['Start'], 'H:mm')
         end_time = arrow.get(course['End'], 'H:mm')
         for week in week_iterator:
-            course_date = start_week_monday.replace(tzinfo='+08:00') \
+            course_date = start_week_monday.replace(tzinfo='Asia/Shanghai') \
                 .shift(weeks=+(week - 1), days=+weekday_to_day[course['Day']])
-            e = Event(name=course_info.module + ' - ' + course_info.activity,
-                      begin=course_date.shift(hours=start_time.hour, minutes=start_time.minute),
-                      end=course_date.shift(hours=end_time.hour, minutes=end_time.minute),
-                      location=course['Room'],
-                      description='Type: ' + course_info.type + '\r\n' + 'Staff: ' + course_info.staff,
-                      )
-            ics_file.events.add(e)
-    return str(ics_file)
+            e = Event()
+            e.add('uid', md5((course['Activity']+course_date.format()).encode('utf-8')).hexdigest())
+            e.add('summary', course_info.module + ' - ' + course_info.activity)
+            e.add('dtstart', course_date.shift(hours=start_time.hour, minutes=start_time.minute).to('utc').datetime)
+            e.add('dtend', course_date.shift(hours=end_time.hour, minutes=end_time.minute).to('utc').datetime)
+            e.add('dtstamp', record.timestamp)
+            e.add('location', course['Room'])
+            e.add('description', course_info.type + '\r\n' + 'Staff: ' + course['Staff'])
+            a = Alarm()
+            a['trigger'] = '-PT15M'
+            a['action'] = 'DISPLAY'
+            a['description'] = course_info.module
+            e.add_component(a)
+            ics_file.add_component(e)
+    return ics_file.to_ical().decode('utf-8')

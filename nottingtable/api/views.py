@@ -35,19 +35,19 @@ def add_or_update(record, key, value, force_refresh):
     return record
 
 
-def output_timetable(format_type, timetable, ics_func, ics_name):
+def output_timetable(format_type, record, ics_func, ics_name):
     """
     Return the timetable
     :param format_type: output format json/ical
-    :param timetable: timetable dicts list
+    :param record: cached user record
     :param ics_func: the function to get ics file
     :param ics_name: ics filename
     :return: ics file or json response
     """
     if format_type == 'json':
-        return jsonify(timetable=timetable), 200
+        return jsonify(timetable=record.timetable), 200
     elif format_type == 'ical':
-        response = make_response((ics_func(timetable, current_app.config['FIRST_MONDAY']), 200))
+        response = make_response((ics_func(record, current_app.config['FIRST_MONDAY']), 200))
         response.headers['Content-Disposition'] = 'attachment; filename={}'.format('"' + ics_name + '.ics"')
         response.headers['Content-Type'] = 'text/calendar charset=utf-8'
         return response
@@ -86,7 +86,7 @@ def get_individual_data(format_type):
 
         student_record = add_or_update(student_record, student_id, timetable_list, force_refresh)
 
-    return output_timetable(format_type, student_record.timetable, get_ics_individual, student_id)
+    return output_timetable(format_type, student_record, get_ics_individual, student_id)
 
 
 @bp.route('/plan/<format_type>', methods=('GET',))
@@ -112,7 +112,7 @@ def get_plan_data(format_type):
 
         student_record = add_or_update(student_record, plan_id, timetable_list, force_refresh)
 
-    return output_timetable(format_type, student_record.timetable, get_ics_plan, plan_id)
+    return output_timetable(format_type, student_record, get_ics_plan, plan_id)
 
 
 @bp.route('/activity', methods=('GET',))

@@ -1,6 +1,7 @@
 import requests
+from hashlib import md5
 from bs4 import BeautifulSoup
-from ics import Calendar, Event
+from icalendar import Calendar, Event, Alarm
 import arrow
 
 from nottingtable.crawler.individual import weeks_generator
@@ -53,31 +54,41 @@ def get_plan_textspreadsheet(url, plan_id):
     return course_list
 
 
-def generate_ics(course_list, start_week_monday):
+def generate_ics(record, start_week_monday):
     """
     Generate ics file for plans
     :param start_week_monday: the date of first monday in the academic year
-    :param course_list:
+    :param record:
     :return: ics file
     """
 
     weekday_to_day = {'Monday': 0, 'Tuesday': 1, 'Wednesday': 2, 'Thursday': 3, 'Friday': 4, 'Saturday': 5, 'Sunday': 6}
 
     ics_file = Calendar()
-    for course in course_list:
+    ics_file.add('version', '2.0')
+    ics_file.add('prodid', 'Nottingtable')
+    for course in record.timetable:
 
         week_iterator = weeks_generator(course['Weeks'])
         start_time = arrow.get(course['Start'], 'H:mm')
         end_time = arrow.get(course['End'], 'H:mm')
 
         for week in week_iterator:
-            course_date = start_week_monday.replace(tzinfo='+08:00') \
+            course_date = start_week_monday.replace(tzinfo='Asia/Shanghai') \
                 .shift(weeks=+(week - 1), days=+weekday_to_day[course['Day']])
-            e = Event(name=course['Activity'] + ' - ' + course['Module'],
-                      begin=course_date.shift(hours=start_time.hour, minutes=start_time.minute),
-                      end=course_date.shift(hours=end_time.hour, minutes=end_time.minute),
-                      location=course['Room'],
-                      description=course['Name of Type'])
-            ics_file.events.add(e)
+            e = Event()
+            e.add('uid', md5((course['Activity']+course_date.format()).encode('utf-8')).hexdigest())
+            e.add('summary', course['Module'] + ' - ' + course['Activity'])
+            e.add('dtstart', course_date.shift(hours=start_time.hour, minutes=start_time.minute).to('utc').datetime)
+            e.add('dtend', course_date.shift(hours=end_time.hour, minutes=end_time.minute).to('utc').datetime)
+            e.add('dtstamp', record.timestamp)
+            e.add('location', course['Room'])
+            e.add('description', course['Name of Type'] + '\r\n' + 'Staff: ' + course['Staff'])
+            a = Alarm()
+            a['trigger'] = '-PT15M'
+            a['action'] = 'DISPLAY'
+            a['description'] = course['Module']
+            e.add_component(a)
+            ics_file.add_component(e)
 
-    return str(ics_file)
+    return ics_file.to_ical().decode('utf-8')
