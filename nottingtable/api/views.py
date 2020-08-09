@@ -15,6 +15,8 @@ from nottingtable.crawler.plans import get_plan_textspreadsheet
 from nottingtable.crawler.plans import generate_ics as get_ics_plan
 from nottingtable.crawler.models import User
 from nottingtable.crawler.models import Course
+from nottingtable.crawler.models import Y1Group
+from nottingtable.crawler.models import MasterPlan
 
 bp = Blueprint('api', __name__, url_prefix='/api')
 
@@ -114,7 +116,6 @@ def get_individual_data(format_type):
 
 @bp.route('/plan/<format_type>', methods=('GET',))
 def get_plan_data(format_type):
-
     if format_type != 'json' and format_type != 'ical':
         return jsonify(error='Not Found'), 404
 
@@ -160,3 +161,15 @@ def show_module():
     module_records = Course.query.filter_by(module=name).all()
 
     return jsonify([i.serialize for i in module_records]), 200
+
+
+@bp.route('/year1-list', methods=('GET',))
+def show_year1_list():
+    year1_list = Y1Group.query.all()
+    return jsonify([i.group for i in year1_list]), 200
+
+
+@bp.route('/master-plan-list', methods=('GET',))
+def show_master_plan_list():
+    master_list = MasterPlan.query.all()
+    return jsonify({i.plan_name: i.plan_id for i in master_list})
