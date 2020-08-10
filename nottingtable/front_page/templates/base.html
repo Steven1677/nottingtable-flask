@@ -4,10 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>{% block title %}{% endblock %} - Nottingtable</title>
-    <!-- Bootstrap core CSS -->
-    <link href="{{ url_for('static', filename='bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='bootstrap-select.min.css') }}" rel="stylesheet">
-    <!-- Custom styles for this template -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/combine/npm/bootstrap@4/dist/css/bootstrap.min.css,npm/bootstrap-select@1/dist/css/bootstrap-select.min.css">
     <link href="{{ url_for('static', filename='forms.css') }}" rel="stylesheet">
 </head>
 <body>
@@ -43,9 +40,7 @@
         {% block content %}{% endblock %}
     </div>
 
-</main><!-- /.container -->
-<script src="{{ url_for('static', filename='jquery-3.5.1.slim.min.js') }}"></script>
-<script src="{{ url_for('static', filename='bootstrap.bundle.min.js') }}"></script>
-<script src="{{ url_for('static', filename='bootstrap-select.min.js') }}"></script>
+</main>
+<script src="https://cdn.jsdelivr.net/combine/npm/bootstrap@4/dist/js/bootstrap.bundle.min.js,npm/jquery@3/dist/jquery.slim.min.js,npm/bootstrap-select@1"></script>
 </body>
 </html>
