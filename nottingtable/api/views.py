@@ -34,7 +34,7 @@ def add_or_update(record, key, value, force_refresh):
     if not record:
         db.session.add(User(student_id=key, timetable=value))
         db.session.commit()
-    elif force_refresh != 0:
+    elif force_refresh:
         record.timetable = value
         record.timestamp = arrow.utcnow().datetime
         db.session.commit()
@@ -56,6 +56,8 @@ def get_record(student_id, force_refresh):
         last_update_time = arrow.get(student_record.timestamp)
         if arrow.utcnow() - last_update_time > timedelta(days=current_app.config['CACHE_LIFE']):
             force_refresh = 1
+    else:
+        force_refresh = 1
 
     return student_record, force_refresh
 
@@ -102,7 +104,7 @@ def get_individual_data(format_type):
 
     student_record, force_refresh = get_record(student_id, force_refresh)
 
-    if not student_record or force_refresh != 0:
+    if not student_record or force_refresh:
         url = current_app.config['BASE_URL']
         try:
             timetable_list = get_individual_timetable(url, student_id, is_year1)
@@ -127,7 +129,7 @@ def get_plan_data(format_type):
 
     student_record, force_refresh = get_record(plan_id, force_refresh)
 
-    if not student_record or force_refresh != 0:
+    if not student_record or force_refresh:
         url = current_app.config['BASE_URL']
         try:
             timetable_list = get_plan_textspreadsheet(url, plan_id)

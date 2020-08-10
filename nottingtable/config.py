@@ -11,7 +11,7 @@ class Config(object):
     FIRST_MONDAY = arrow.get('2019-09-16')  # YYYY-MM-DD
     YEAR1_PDF_URL = 'https://www.nottingham.edu.cn/en/academicservices/documents/year-1-student-timetable-1920-spring-semester-20200429v4.pdf'
 
-    # integer, the cache lifetime in database
+    # integer, the cache lifetime in database, unit: day
     CACHE_LIFE = 1
 
 

@@ -11,7 +11,7 @@
         <div class="card-body">
             <h5 class="card-title">Select your group</h5>
             <div class="form">
-                <form action="/api/individual/ical" method="GET">
+                <form action="/check" method="POST">
                     <div class="form-group">
                         <select required class="selectpicker" data-width="auto" data-live-search="true"
                                 title="Select Your Group Here" name="group">
@@ -28,6 +28,7 @@
                             timetable has
                             been changed.</small>
                     </div>
+                    <input type="hidden" name="type" value="year-1">
                     <button type="submit" class="btn btn-primary">Get Timetable</button>
                 </form>
             </div>

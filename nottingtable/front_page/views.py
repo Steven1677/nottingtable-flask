@@ -1,6 +1,12 @@
 from flask import Blueprint
+from flask import current_app
+from flask import request
 from flask import render_template
 
+from nottingtable.api.views import add_or_update
+from nottingtable.api.views import get_record
+from nottingtable.crawler.individual import get_individual_timetable
+from nottingtable.crawler.plans import get_plan_textspreadsheet
 from nottingtable.crawler.models import Y1Group
 from nottingtable.crawler.models import MasterPlan
 
@@ -39,6 +45,51 @@ def show_plan():
     return render_template('plan.html', plan_list=plan_list)
 
 
-@bp.route('/public-api', methods=('GET',))
-def show_api():
-    return render_template('api.html')
+@bp.route('/check', methods=('POST',))
+def check_cal():
+    """Show the list of all calendar events"""
+
+    def get_link():
+        """Generate download links"""
+        if data['type'] == 'year-1':
+            return '/api/individual/ical?group={}'.format(student_id)
+        elif data['type'] == 'year-24':
+            return '/api/individual/ical?id={}'.format(student_id)
+        elif data['type'] == 'plan':
+            return '/api/plan/ical?plan={}'.format(student_id)
+
+    # Defense
+    types = ['year-1', 'year-24', 'plan']
+    data = request.form
+    if not data.get('type') in types:
+        return render_template('check.html', timetable=None)
+
+    force_refresh = data.get('force-refresh')
+    student_id = data.get('id') or data.get('group') or data.get('plan')
+    record, force_refresh = get_record(student_id, force_refresh)
+    fields = ['Activity', 'Module', 'Day', 'Staff', 'Start', 'End', 'Weeks']
+
+    if force_refresh:
+        url = current_app.config['BASE_URL']
+        if data['type'] == 'year-1':
+            try:
+                timetable = get_individual_timetable(url, student_id, True)
+            except NameError:
+                return render_template('check.html', timetable=None)
+        elif data['type'] == 'year-24':
+            try:
+                timetable = get_individual_timetable(url, student_id, False)
+            except NameError:
+                return render_template('check.html', timetable=None)
+        elif data['type'] == 'plan':
+            try:
+                timetable = get_plan_textspreadsheet(url, student_id)
+            except NameError:
+                return render_template('check.html', timetable=None)
+        else:
+            return render_template('check.html', timetable=None)
+        add_or_update(record, student_id, timetable, force_refresh)
+        link = get_link()
+        return render_template('check.html', fields=fields, timetable=timetable, link=link)
+    else:
+        return render_template('check.html', fields=fields, timetable=record.timetable, link=get_link())

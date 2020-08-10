@@ -6,3 +6,4 @@ click~=7.1.2
 icalendar~=4.0.6
 pdfminer.six~=20200726
 lxml~=4.5.2
+PyMySQL~=0.10.0

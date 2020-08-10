@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %} Check {% endblock %}
+
+{% block content %}
+
+    {% if timetable %}
+        <div class="alert alert-primary alert-dismissible fade show" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <h4 class="alert-heading">One more step!</h4>
+            <p>Please check the timetable below:</p>
+            <hr>
+            <p class="mb-0">If you find your timetable is different from below, please go back and check "Refresh my timetable".</p>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <caption>List of courses</caption>
+                <thead class="thead-dark">
+                <tr>
+                    {% for header in fields %}
+                        <th scope="col">{{ header }}</th>
+                    {% endfor %}
+                </tr>
+                </thead>
+                <tbody>
+                {% for course in timetable %}
+                    <tr>
+                        <td>{{ course['Activity'] }}</td>
+                        <td>{{ course['Module'] }}</td>
+                        <td>{{ course['Day'] }}</td>
+                        <td>{{ course['Staff'] }}</td>
+                        <td>{{ course['Start'] }}</td>
+                        <td>{{ course['End'] }}</td>
+                        <td>{{ course['Weeks'] }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="alert alert-success" role="alert">
+            <h4 class="alert-heading">Get it!</h4>
+            <p>Click <a href="{{ link }}">here</a> to download.</p>
+            <hr>
+            <p class="mb-0">Or copy the <a href="{{ link }}">download link</a> to subscribe the calendar!</p>
+        </div>
+    {% else %}
+        <h1>Oops, something went wrong!</h1>
+        <p class="leading-tight">It seems the timetable does not exist!</p>
+    {% endif %}
+{% endblock %}

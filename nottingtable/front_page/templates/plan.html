@@ -11,9 +11,9 @@
         <div class="card-body">
             <h5 class="card-title">Select your plan</h5>
             <div class="form">
-                <form action="/api/plan/ical" method="GET">
+                <form action="/check" method="POST">
                     <div class="form-group">
-                        <select id="plan" class="selectpicker form-control" data-width="auto" data-live-search="true"
+                        <select required id="plan" class="selectpicker form-control" data-live-search="true"
                                 title="Select Your Plan Here"
                                 name="plan">
                             {% for plan in plan_list %}
@@ -29,6 +29,7 @@
                             timetable has
                             been changed.</small>
                     </div>
+                    <input type="hidden" name="type" value="plan">
                     <button type="submit" class="btn btn-primary">Get Timetable</button>
                 </form>
             </div>
