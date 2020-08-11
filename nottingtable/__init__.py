@@ -26,6 +26,7 @@ def create_app(development_config=True):
     app.cli.add_command(update_master_plan_list)
     app.cli.add_command(update_year1_group)
     app.cli.add_command(update_module)
+    app.cli.add_command(init_all)
 
     # apply the blueprints to the app
     from nottingtable import api
@@ -89,4 +90,21 @@ def update_master_plan_list():
 def update_module():
     """Re-get Module List"""
     from nottingtable.crawler import update_module_list
+    update_module_list()
+
+
+@click.command("init-all")
+@with_appcontext
+def init_all():
+    """Init everything"""
+    from nottingtable.crawler import update_course_db
+    from nottingtable.crawler import update_department_list
+    from nottingtable.crawler import update_year1_group
+    from nottingtable.crawler import update_master_plan_list
+    from nottingtable.crawler import update_module_list
+    init_db()
+    update_department_list()
+    update_course_db()
+    update_year1_group()
+    update_master_plan_list()
     update_module_list()
