@@ -72,7 +72,7 @@ def output_timetable(format_type, record, ics_func, ics_name):
     :return: ics file or json response
     """
     if format_type == 'json':
-        return jsonify(timetable=record.timetable), 200
+        return jsonify(timetable=record.timetable, last_update=record.timestamp), 200
     elif format_type == 'ical':
         response = make_response((ics_func(record, current_app.config['FIRST_MONDAY']), 200))
         response.headers['Content-Disposition'] = 'attachment; filename={}'.format('"' + ics_name + '.ics"')
