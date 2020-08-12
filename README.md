@@ -73,7 +73,7 @@ how to install python environment, and etc..*
     `flask run`
 
 Now, the basic deployment finishes. For the production-ready
-deployment, please refer to Wiki.
+deployment, please refer to [Wiki](https://github.com/Steven1677/nottingtable-flask/wiki/Deploy-for-Production).
 
 ## Contribute
 As an open sourced program, any contributes to this project is welcome.
