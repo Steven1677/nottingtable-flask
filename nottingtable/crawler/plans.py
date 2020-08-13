@@ -1,10 +1,8 @@
 import requests
-from hashlib import md5
 from bs4 import BeautifulSoup
-from icalendar import Calendar, Event, Alarm
-import arrow
 
-from nottingtable.crawler.individual import weeks_generator
+from nottingtable.crawler.ics_helper import get_cal
+from nottingtable.crawler.ics_helper import add_whole_course
 
 
 def get_plan_textspreadsheet(url, plan_id):
@@ -62,33 +60,9 @@ def generate_ics(record, start_week_monday):
     :return: ics file
     """
 
-    weekday_to_day = {'Monday': 0, 'Tuesday': 1, 'Wednesday': 2, 'Thursday': 3, 'Friday': 4, 'Saturday': 5, 'Sunday': 6}
+    ics_file = get_cal()
 
-    ics_file = Calendar()
-    ics_file.add('version', '2.0')
-    ics_file.add('prodid', 'Nottingtable')
     for course in record.timetable:
-
-        week_iterator = weeks_generator(course['Weeks'])
-        start_time = arrow.get(course['Start'], 'H:mm')
-        end_time = arrow.get(course['End'], 'H:mm')
-
-        for week in week_iterator:
-            course_date = start_week_monday.replace(tzinfo='Asia/Shanghai') \
-                .shift(weeks=+(week - 1), days=+weekday_to_day[course['Day']])
-            e = Event()
-            e.add('uid', md5((course['Activity']+course_date.format()).encode('utf-8')).hexdigest())
-            e.add('summary', course['Module'] + ' - ' + course['Activity'])
-            e.add('dtstart', course_date.shift(hours=start_time.hour, minutes=start_time.minute).to('utc').datetime)
-            e.add('dtend', course_date.shift(hours=end_time.hour, minutes=end_time.minute).to('utc').datetime)
-            e.add('dtstamp', record.timestamp)
-            e.add('location', course['Room'])
-            e.add('description', course['Name of Type'] + '\r\n' + 'Staff: ' + course['Staff'])
-            a = Alarm()
-            a['trigger'] = '-PT15M'
-            a['action'] = 'DISPLAY'
-            a['description'] = course['Module']
-            e.add_component(a)
-            ics_file.add_component(e)
+        add_whole_course(course, ics_file, start_week_monday, record.timestamp)
 
     return ics_file.to_ical().decode('utf-8')

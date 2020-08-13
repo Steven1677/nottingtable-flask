@@ -1,11 +1,10 @@
 import re
 import requests
-from hashlib import md5
 from bs4 import BeautifulSoup
-from icalendar import Calendar, Event, Alarm
-import arrow
 
 from nottingtable import db
+from nottingtable.crawler.ics_helper import get_cal
+from nottingtable.crawler.ics_helper import add_whole_course
 from nottingtable.crawler.courses import add_course
 from nottingtable.crawler.modules import get_module_activity
 from nottingtable.crawler.models import Course
@@ -41,27 +40,6 @@ def get_time_periods():
             periods.append(str(h) + ':' + ('00' if m == 0 else '30'))
     periods.append('22:00')
     return periods
-
-
-def weeks_generator(week_str):
-    """
-    Generator function for (a-b, c-d, e) format
-    :param week_str: week_str from individual page
-    :return: week iterator
-    """
-    week_periods = week_str.split(', ')
-    for week_period in week_periods:
-        dash_index = week_period.find('-')
-        if dash_index == -1:
-            week_num = int(week_period)
-            yield week_num
-        else:
-            week_start_num = int(week_period[:dash_index])
-            week_end_num = int(week_period[dash_index + 1:])
-            current_week = week_start_num
-            while current_week <= week_end_num:
-                yield current_week
-                current_week = current_week + 1
 
 
 def get_individual_timetable(url, student_id, is_year1=False):
@@ -148,32 +126,12 @@ def generate_ics(record, start_week_monday):
     :param start_week_monday: arrow object
     :return: ics_file
     """
-    weekday_to_day = {'Mon': 0, 'Tue': 1, 'Wed': 2, 'Thu': 3, 'Fri': 4, 'Sat': 5, 'Sun': 6}
-    ics_file = Calendar()
-    ics_file.add('version', '2.0')
-    ics_file.add('prodid', 'Nottingtable')
+    ics_file = get_cal()
     for course in record.timetable:
         # course is from individual webpage
         # course_info is from course page cached in the database
-        week_iterator = weeks_generator(course['Weeks'])
         course_info = Course.query.filter_by(activity=course['Activity']).first()
-        start_time = arrow.get(course['Start'], 'H:mm')
-        end_time = arrow.get(course['End'], 'H:mm')
-        for week in week_iterator:
-            course_date = start_week_monday.replace(tzinfo='Asia/Shanghai') \
-                .shift(weeks=+(week - 1), days=+weekday_to_day[course['Day']])
-            e = Event()
-            e.add('uid', md5((course['Activity']+course_date.format()).encode('utf-8')).hexdigest())
-            e.add('summary', course_info.module + ' - ' + course_info.activity)
-            e.add('dtstart', course_date.shift(hours=start_time.hour, minutes=start_time.minute).to('utc').datetime)
-            e.add('dtend', course_date.shift(hours=end_time.hour, minutes=end_time.minute).to('utc').datetime)
-            e.add('dtstamp', record.timestamp)
-            e.add('location', course['Room'])
-            e.add('description', course_info.type + '\r\n' + 'Staff: ' + course['Staff'])
-            a = Alarm()
-            a['trigger'] = '-PT15M'
-            a['action'] = 'DISPLAY'
-            a['description'] = course_info.module
-            e.add_component(a)
-            ics_file.add_component(e)
+        course['Module'] = course_info.module
+        course['Name of Type'] = course_info.type
+        add_whole_course(course, ics_file, start_week_monday, record.timestamp)
     return ics_file.to_ical().decode('utf-8')
