@@ -12,7 +12,8 @@ from nottingtable.crawler.individual import validate_student_id
 from nottingtable.crawler.individual import get_individual_timetable
 from nottingtable.crawler.individual import generate_ics as get_ics_individual
 from nottingtable.crawler.plans import get_plan_textspreadsheet
-from nottingtable.crawler.plans import generate_ics as get_ics_plan
+from nottingtable.crawler.plans import generate_ics as get_ics
+from nottingtable.crawler.staff import get_staff_timetable
 from nottingtable.crawler.models import User
 from nottingtable.crawler.models import Course
 from nottingtable.crawler.models import Y1Group
@@ -93,12 +94,8 @@ def get_individual_data(format_type):
     else:
         return jsonify(error='Student ID or Group Name Not Provided'), 400
 
-    if not is_year1:
-        if not validate_student_id(student_id, is_year1=is_year1):
-            return jsonify(error='Student ID Invalid'), 400
-    else:
-        if not validate_student_id(student_id, is_year1=is_year1):
-            return jsonify(error='Group Name Invalid'), 400
+    if not validate_student_id(student_id, is_year1=is_year1):
+        return jsonify(error='Group Name Invalid'), 400
 
     force_refresh = request.args.get('force-refresh') or 0
 
@@ -109,7 +106,7 @@ def get_individual_data(format_type):
         try:
             timetable_list = get_individual_timetable(url, student_id, is_year1)
         except NameError:
-            return jsonify(error='Student ID/Group Invalid'), 400
+            return jsonify(error='Student ID/Group Not Found'), 404
 
         student_record = add_or_update(student_record, student_id, timetable_list, force_refresh)
 
@@ -134,11 +131,36 @@ def get_plan_data(format_type):
         try:
             timetable_list = get_plan_textspreadsheet(url, plan_id)
         except NameError:
-            return jsonify(error='Plan ID Invalid'), 400
+            return jsonify(error='Plan ID Not Found'), 404
 
         student_record = add_or_update(student_record, plan_id, timetable_list, force_refresh)
 
-    return output_timetable(format_type, student_record, get_ics_plan, plan_id)
+    return output_timetable(format_type, student_record, get_ics, plan_id)
+
+
+@bp.route('/staff/<format_type>', methods=('GET',))
+def get_staff_data(format_type):
+    if format_type != 'json' and format_type != 'ical':
+        return jsonify(error='Not Found'), 404
+
+    name = request.args.get('name')
+    if not name:
+        return jsonify(error='Staff Name not Provided'), 400
+
+    force_refresh = request.args.get('force-refresh') or 0
+
+    staff_record, force_refresh = get_record(name, force_refresh)
+
+    if not staff_record or force_refresh:
+        url = current_app.config['BASE_URL']
+        try:
+            timetable_list = get_staff_timetable(url, name)
+        except NameError:
+            return jsonify(error='Staff Name Not Found'), 404
+
+        staff_record = add_or_update(staff_record, name, timetable_list, force_refresh)
+
+    return output_timetable(format_type, staff_record, get_ics, name)
 
 
 @bp.route('/activity', methods=('GET',))

@@ -87,7 +87,8 @@ def add_whole_course(course, ics_file, start_week_monday, last_update):
     :param ics_file: an ics_file object
     :return: None
     """
-    weekday_to_day = {'Mon': 0, 'Tue': 1, 'Wed': 2, 'Thu': 3, 'Fri': 4, 'Sat': 5, 'Sun': 6}
+    weekday_to_day = {'Mon': 0, 'Tue': 1, 'Wed': 2, 'Thu': 3, 'Fri': 4, 'Sat': 5, 'Sun': 6,
+                      'Monday': 0, 'Tuesday': 1, 'Wednesday': 2, 'Thursday': 3, 'Friday': 4, 'Saturday': 5, 'Sunday': 6}
 
     week_iterator = weeks_generator(course['Weeks'])
     start_time = arrow.get(course['Start'], 'H:mm')

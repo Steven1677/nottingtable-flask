@@ -3,19 +3,18 @@
 {% block title %} Home {% endblock %}
 
 {% block content %}
-    <div class="card text-center">
+    <div class="card text-center mx-auto " >
         <div class="card-header">
             Timetable to Calendar
         </div>
         <div class="card-body">
-            <h5 class="card-title">Choose your category</h5>
-            <p class="card-text">Due to implementation behind <a href="http://timetablingunnc.nottingham.ac.uk:8005/">Timetabling
-                Office</a>,
-                not all students can get timetable via student ID.</p>
-            <p class="card-text">We are sorry to bother you to make one more choice.</p>
-            <a href="/year-1" class="btn btn-primary m-2">Year 1 Students via Group Name</a>
-            <a href="/year-24" class="btn btn-primary m-2">Year 2-4 Students via Student ID</a>
-            <a href="/plan" class="btn btn-primary m-2">Master Students via Plan Name</a>
+            <h5 class="card-title">Choose:</h5>
+            <div class="list-group list-group-flush">
+                <a href="/year-1" class="list-group-item list-group-item-action">Year 1 Students</a>
+                <a href="/year-24" class="list-group-item list-group-item-action">Year 2-4 Students</a>
+                <a href="/plan" class="list-group-item list-group-item-action">Master Students</a>
+                <a href="/staff" class="list-group-item list-group-item-action">Staff</a>
+            </div>
         </div>
         <div class="card-footer text-muted">
             Powered by Flask

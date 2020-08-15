@@ -1,28 +1,25 @@
 {% extends 'base.html' %}
-{% set active_page = "year-24" %}
+{% set active_page = "staff" %}
 
-{% block title %} Year 2-4 Timetable {% endblock %}
+{% block title %} Staff Timetable {% endblock %}
 
 {% block content %}
     <div class="card text-center mx-auto">
     <div class="card-header">
-        Year 2-4 - Timetable to Calendar
+        Staff - Timetable to Calendar
     </div>
     <div class="card-body">
-        <h5 class="card-title">Type your student ID</h5>
+        <h5 class="card-title">Type your Name</h5>
         <div class="col-xl-5 col-lg-6 col-md-8 col-sm-10 mx-auto text-center form">
-            <form action="/check" , method="POST">
+            <form action="/check" method="POST">
                 <div class="form-group">
-                    <label for="id" class="invisible">Student ID</label>
-                    <input pattern="\d{8}" required name="id" type="text" class="form-control" id="id"
-                           aria-describedby="studentID" placeholder="Type Student ID Here">
-                    <input type="hidden" name="type" value="year-24">
+                    <label for="id" class="invisible">Staff Name</label>
+                    <input required name="name" type="text" class="form-control" id="id"
+                           aria-describedby="StaffName" placeholder="Type Name Here">
+                    <input type="hidden" name="type" value="name">
                     <small class="form-text text-muted">
-                        Please only type in 8 digits Student ID.
-                        <br>
-                        e.g. 20120000
+                        e.g. Steven Chan
                     </small>
-
                 </div>
                 <div class="form-group form-check">
                     <input name="force-refresh" type="checkbox" class="form-check-input" id="force-refresh" value="1">

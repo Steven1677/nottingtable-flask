@@ -4,7 +4,7 @@
 {% block title %} Master Timetable via Plan {% endblock %}
 
 {% block content %}
-    <div class="card text-center">
+    <div class="card text-center mx-auto">
         <div class="card-header">
             Master Plan - Timetable to Calendar
         </div>
@@ -15,9 +15,15 @@
                     <div class="form-group">
                         <select required id="plan" class="selectpicker form-control" data-live-search="true"
                                 title="Select Your Plan Here"
-                                name="plan">
+                                name="plan"
+                                data-width="fit">
                             {% for plan in plan_list %}
-                                <option value="{{ plan.plan_id }}">{{ plan.plan_name }}</option>
+                                {% set plan_items = plan.plan_name.split(' - ') %}
+                                {% if plan_items[0] != 'No Award' %}
+                                    <option value="{{ plan.plan_id }}" title="{{ plan.plan_name }}">
+                                        {{ plan_items[1] }}
+                                    </option>
+                                {% endif %}
                             {% endfor %}
                         </select>
                     </div>

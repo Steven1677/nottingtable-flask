@@ -2,11 +2,14 @@ from flask import Blueprint
 from flask import current_app
 from flask import request
 from flask import render_template
+from flask import redirect
+from flask import url_for
 
 from nottingtable.api.views import add_or_update
 from nottingtable.api.views import get_record
 from nottingtable.crawler.individual import get_individual_timetable
 from nottingtable.crawler.plans import get_plan_textspreadsheet
+from nottingtable.crawler.staff import get_staff_timetable
 from nottingtable.crawler.models import Y1Group
 from nottingtable.crawler.models import MasterPlan
 
@@ -45,7 +48,16 @@ def show_plan():
     return render_template('plan.html', plan_list=plan_list)
 
 
-@bp.route('/check', methods=('POST',))
+@bp.route('/staff', methods=('GET',))
+def show_staff():
+    """
+    Render page for staff
+    :return: rendered page with staff input box
+    """
+    return render_template('staff.html')
+
+
+@bp.route('/check', methods=('POST', 'GET'))
 def check_cal():
     """Show the list of all calendar events"""
 
@@ -57,15 +69,20 @@ def check_cal():
             return '/api/individual/ical?id={}'.format(student_id)
         elif data['type'] == 'plan':
             return '/api/plan/ical?plan={}'.format(student_id)
+        elif data['type'] == 'name':
+            return '/api/staff/ical?name={}'.format(student_id)
+
+    if request.method == 'GET':
+        return redirect(url_for('index'))
 
     # Defense
-    types = ['year-1', 'year-24', 'plan']
+    types = ['year-1', 'year-24', 'plan', 'name']
     data = request.form
     if not data.get('type') in types:
         return render_template('check.html', timetable=None)
 
     force_refresh = data.get('force-refresh')
-    student_id = data.get('id') or data.get('group') or data.get('plan')
+    student_id = data.get('id') or data.get('group') or data.get('plan') or data.get('name')
     record, force_refresh = get_record(student_id, force_refresh)
     fields = ['Activity', 'Module', 'Day', 'Staff', 'Start', 'End', 'Weeks']
 
@@ -84,6 +101,11 @@ def check_cal():
         elif data['type'] == 'plan':
             try:
                 timetable = get_plan_textspreadsheet(url, student_id)
+            except NameError:
+                return render_template('check.html', timetable=None)
+        elif data['type'] == 'name':
+            try:
+                timetable = get_staff_timetable(url, student_id)
             except NameError:
                 return render_template('check.html', timetable=None)
         else:
