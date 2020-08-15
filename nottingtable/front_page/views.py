@@ -64,13 +64,13 @@ def check_cal():
     def get_link():
         """Generate download links"""
         if data['type'] == 'year-1':
-            return '/api/individual/ical?group={}'.format(student_id)
+            return url_for('api.get_individual_data', format_type='ical', group=student_id, _external=True)
         elif data['type'] == 'year-24':
-            return '/api/individual/ical?id={}'.format(student_id)
+            return url_for('api.get_individual_data', format_type='ical', id=student_id, _external=True)
         elif data['type'] == 'plan':
-            return '/api/plan/ical?plan={}'.format(student_id)
+            return url_for('api.get_plan_data', format_type='ical', plan=student_id, _external=True)
         elif data['type'] == 'name':
-            return '/api/staff/ical?name={}'.format(student_id)
+            return url_for('api.get_staff_data', format_type='ical', name=student_id, _external=True)
 
     if request.method == 'GET':
         return redirect(url_for('index'))

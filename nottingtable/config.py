@@ -18,6 +18,9 @@ class Config(object):
     # integer, the cache lifetime in database, unit: day
     CACHE_LIFE = 1
 
+    # Server domain
+    SERVER_NAME = os.environ.get('SERVER_NAME')
+
 
 class ProductionConfig(Config):
     BASE_URL = 'http://timetablingunnc.nottingham.ac.uk:8005/'
