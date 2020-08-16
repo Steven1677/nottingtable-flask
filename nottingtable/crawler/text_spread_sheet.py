@@ -7,7 +7,7 @@ def extract_text_spread_sheet(url, exclude_filter):
     Extract information from a text spread sheet
     :param exclude_filter: a function takes a dict and return True if the data should be ignored
     :param url: the url for text spread sheet
-    :return: course list
+    :return: course list and name
     """
 
     resp = requests.get(url)
@@ -15,6 +15,7 @@ def extract_text_spread_sheet(url, exclude_filter):
         raise NameError('Course not Found')
     courses = resp.text
     courses_soup = BeautifulSoup(courses, 'lxml')
+    name = courses_soup.find('b').get_text()
     courses_tables = courses_soup.find_all(border='1')
     fields = []
     course_list = []
@@ -37,4 +38,4 @@ def extract_text_spread_sheet(url, exclude_filter):
                 if exclude_filter(temp_dict):
                     continue
                 course_list.append(temp_dict)
-    return course_list
+    return course_list, name

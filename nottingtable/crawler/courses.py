@@ -59,7 +59,7 @@ def get_department_courses(url, dept_id, dept_name):
     def exclude_filter(course_dict):
         return course_dict['Name of Type'].lower() in exec_type_list
     try:
-        course_list = extract_text_spread_sheet(url, exclude_filter)
+        course_list, _ = extract_text_spread_sheet(url, exclude_filter)
     except NameError:
         return dept_name + ' CRAWLING FAILED !!!'
 

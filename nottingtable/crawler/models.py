@@ -46,7 +46,8 @@ class Department(db.Model):
 
 class User(db.Model):
     id = db.Column(db.INTEGER, primary_key=True)
-    student_id = db.Column(db.String(50), unique=True, nullable=False)
+    sid = db.Column(db.String(50), unique=True, nullable=False)
+    sname = db.Column(db.String(256), nullable=False)
     timetable = db.Column(db.JSON, nullable=False)
     timestamp = db.Column(db.DateTime, nullable=False,
                           default=datetime.utcnow, onupdate=datetime.utcnow)

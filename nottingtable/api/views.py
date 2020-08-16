@@ -22,24 +22,26 @@ from nottingtable.crawler.models import MasterPlan
 bp = Blueprint('api', __name__, url_prefix='/api')
 
 
-def add_or_update(record, key, value, force_refresh):
+def add_or_update(record, key, timetable, name, force_refresh):
     """
     Insert a new user record or update exist one
+    :param name: user name identifier
+    :param timetable: timetable list
     :param force_refresh: if refresh is required
-    :param value: the value ready for insertion and update
     :param key: the key in database
     :param record: a User record
     :return: updated record
     """
 
     if not record:
-        db.session.add(User(student_id=key, timetable=value))
+        db.session.add(User(sid=key, timetable=timetable, sname=name))
         db.session.commit()
     elif force_refresh:
-        record.timetable = value
+        record.timetable = timetable
         record.timestamp = arrow.utcnow().datetime
+        record.sname = name
         db.session.commit()
-    record = User.query.filter_by(student_id=key).first()
+    record = User.query.filter_by(sid=key).first()
     return record
 
 
@@ -50,7 +52,7 @@ def get_record(student_id, force_refresh):
     :param force_refresh: force_refresh flag
     :return: student_record and force_refresh
     """
-    student_record = User.query.filter_by(student_id=student_id).first()
+    student_record = User.query.filter_by(sid=student_id).first()
 
     # cache life time check
     if student_record:
@@ -73,7 +75,7 @@ def output_timetable(format_type, record, ics_func, ics_name):
     :return: ics file or json response
     """
     if format_type == 'json':
-        return jsonify(timetable=record.timetable, last_update=record.timestamp), 200
+        return jsonify(timetable=record.timetable, last_update=record.timestamp, name=record.sname), 200
     elif format_type == 'ical':
         response = make_response((ics_func(record, current_app.config['FIRST_MONDAY']), 200))
         response.headers['Content-Disposition'] = 'attachment; filename={}'.format('"' + ics_name + '.ics"')
@@ -104,11 +106,11 @@ def get_individual_data(format_type):
     if not student_record or force_refresh:
         url = current_app.config['BASE_URL']
         try:
-            timetable_list = get_individual_timetable(url, student_id, is_year1)
+            timetable_list, name = get_individual_timetable(url, student_id, is_year1)
         except NameError:
             return jsonify(error='Student ID/Group Not Found'), 404
 
-        student_record = add_or_update(student_record, student_id, timetable_list, force_refresh)
+        student_record = add_or_update(student_record, student_id, timetable_list, name, force_refresh)
 
     return output_timetable(format_type, student_record, get_ics_individual, student_id)
 
@@ -129,11 +131,11 @@ def get_plan_data(format_type):
     if not student_record or force_refresh:
         url = current_app.config['BASE_URL']
         try:
-            timetable_list = get_plan_textspreadsheet(url, plan_id)
+            timetable_list, web_name = get_plan_textspreadsheet(url, plan_id)
         except NameError:
             return jsonify(error='Plan ID Not Found'), 404
 
-        student_record = add_or_update(student_record, plan_id, timetable_list, force_refresh)
+        student_record = add_or_update(student_record, plan_id, timetable_list, web_name, force_refresh)
 
     return output_timetable(format_type, student_record, get_ics, plan_id)
 
@@ -154,11 +156,11 @@ def get_staff_data(format_type):
     if not staff_record or force_refresh:
         url = current_app.config['BASE_URL']
         try:
-            timetable_list = get_staff_timetable(url, name)
+            timetable_list, web_name = get_staff_timetable(url, name)
         except NameError:
             return jsonify(error='Staff Name Not Found'), 404
 
-        staff_record = add_or_update(staff_record, name, timetable_list, force_refresh)
+        staff_record = add_or_update(staff_record, name, timetable_list, web_name, force_refresh)
 
     return output_timetable(format_type, staff_record, get_ics, name)
 

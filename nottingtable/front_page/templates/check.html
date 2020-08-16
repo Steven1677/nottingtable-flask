@@ -10,13 +10,13 @@
                 <span aria-hidden="true">&times;</span>
             </button>
             <h4 class="alert-heading">One more step!</h4>
-            <p>Please check the timetable below:</p>
+            <p>Please check the timetable for <mark> {{ name }}</mark>:</p>
             <hr>
             <p class="mb-0">If you find your timetable is different from below, please go back and check "Refresh my timetable".</p>
         </div>
         <div class="table-responsive">
             <table class="table table-bordered table-hover">
-                <caption>List of courses</caption>
+                <caption>List of courses (last updated: {{ timestamp }})</caption>
                 <thead class="thead-dark">
                 <tr>
                     {% for header in fields %}
@@ -41,7 +41,7 @@
         </div>
         <div class="alert alert-success" role="alert">
             <h4 class="alert-heading">Get it!</h4>
-            <p>Click <a href="{{ link }}">here</a> to download.</p>
+            <p><a href="{{ link }}" class="btn btn-primary" >Click here to download </a></p>
             <hr>
             <p class="mb-0">Or copy the link: <a href="{{ link }}">{{ link }}</a> to subscribe the calendar!</p>
         </div>

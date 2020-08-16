@@ -1,3 +1,5 @@
+import arrow
+
 from flask import Blueprint
 from flask import current_app
 from flask import request
@@ -90,28 +92,31 @@ def check_cal():
         url = current_app.config['BASE_URL']
         if data['type'] == 'year-1':
             try:
-                timetable = get_individual_timetable(url, student_id, True)
+                timetable, name = get_individual_timetable(url, student_id, True)
             except NameError:
                 return render_template('check.html', timetable=None)
         elif data['type'] == 'year-24':
             try:
-                timetable = get_individual_timetable(url, student_id, False)
+                timetable, name = get_individual_timetable(url, student_id, False)
             except NameError:
                 return render_template('check.html', timetable=None)
         elif data['type'] == 'plan':
             try:
-                timetable = get_plan_textspreadsheet(url, student_id)
+                timetable, name = get_plan_textspreadsheet(url, student_id)
             except NameError:
                 return render_template('check.html', timetable=None)
         elif data['type'] == 'name':
             try:
-                timetable = get_staff_timetable(url, student_id)
+                timetable, name = get_staff_timetable(url, student_id)
             except NameError:
                 return render_template('check.html', timetable=None)
         else:
             return render_template('check.html', timetable=None)
-        add_or_update(record, student_id, timetable, force_refresh)
-        link = get_link()
-        return render_template('check.html', fields=fields, timetable=timetable, link=link)
-    else:
-        return render_template('check.html', fields=fields, timetable=record.timetable, link=get_link())
+        record = add_or_update(record, student_id, timetable, name, force_refresh)
+    link = get_link()
+    return render_template('check.html',
+                           fields=fields,
+                           timetable=record.timetable,
+                           link=link,
+                           name=record.sname,
+                           timestamp=arrow.get(record.timestamp).to('Asia/Shanghai').humanize())

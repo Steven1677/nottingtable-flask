@@ -61,6 +61,10 @@ def get_individual_timetable(url, student_id, is_year1=False):
     if res.status_code != 200:
         raise NameError('Student ID Not Found.')
     soup = BeautifulSoup(res.text, 'lxml')
+    name = soup.find(text=re.compile('Student Set timetable: .*')).split(': ')[-1]
+    if not is_year1:
+        name = name.split('/')
+        name = name[-2] + ' ' +  name[-1]
     timetable = soup.find(border='1')
 
     periods = get_time_periods()
@@ -116,7 +120,7 @@ def get_individual_timetable(url, student_id, is_year1=False):
                     'Weeks': weeks,
                     'Day': current_weekday
                 })
-    return timetable_list
+    return timetable_list, name
 
 
 def generate_ics(record, start_week_monday):
