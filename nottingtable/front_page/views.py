@@ -20,7 +20,9 @@ bp = Blueprint('front', __name__, template_folder='templates')
 
 @bp.route('/', methods=('GET',))
 def index():
-    return render_template('index.html')
+    start_date = current_app.config['FIRST_MONDAY']
+    end_date = start_date.shift(weeks=52, days=-1)
+    return render_template('index.html', start_date=start_date.date(), end_date=end_date.date())
 
 
 @bp.route('/year-24', methods=('GET',))
