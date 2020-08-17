@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% set active_page = "usage" %}
+{% block title %} Usage {% endblock %}
+
+{% block content %}
+    <h1 class="text-center">How to use ics file?</h1>
+    <p class="lead text-center">Use Outlook.com Desktop website as an example</p>
+    <h5>Step 1:</h5>
+    <p>Open Outlook Calendar Page: <a href="https://outlook.office.com/calendar/">https://outlook.office.com/calendar/</a></p>
+    <h5>Step 2:</h5>
+    <p>Click "Add calendar" on the left panel.</p>
+    <h5>Step 3 - For subscription:</h5>
+    <p>Click on "Subscribe from web" on the left panel of the pop-up window, then paste your ics url into the text input box on the right.</p>
+    <p>You are done!</p>
+    <h5>Step 3 - For Downloaded ics file:</h5>
+    <p>Click "Create blank calendar" on the left panel of the pop-up window, then upload your ics file through "Upload from file" (make sure you select the calendar that you have just created).</p>
+    <p>Note: "Create blank calendar" is optional, but it is highly recommended. If you upload the wrong ics file into your primary calendar, it is hard to remove all of the events imported (you have to delete them one by one, since deleting the primary calendar is not possible in Outlook.com).</p>
+    <p>You are done!</p>
+{% endblock %}

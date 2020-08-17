@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% set active_page = "qna" %}
+{% block title %} Q&A {% endblock %}
+
+{% block content %}
+    <h1 class="text-center">Q&A</h1>
+    <p class="lead text-center">For some questions and their answers</p>
+    <h5>What is Nottingtable?</h5>
+    <p>Nottingtable is a web system that allows UNNC students to get their teaching timetable in ical (.ics) format.</p>
+    <h5>Who developed Nottingtable?</h5>
+    <p>Nottingtable is mainly developed by a student intern from IT Service. You can check more information about contributors on <a href="https://github.com/Steven1677/nottingtable-flask">GitHub</a>.</p>
+    <h5>Where did you get the course data?</h5>
+    <p>It is from the school's official <a href="{{ official_link }}">timetabling office system</a>. All the data we used is collected from the website, which is open to everyone on the internet.</p>
+    <h5>So, what does it mean?</h5>
+    <p>It means that all the data in this database is crawled down from school's public web page, and this program can not read data from school's timetabling database directly, so please be patient about your updates.</p>
+    <h5>It seems that our school's ASO has an official calendar system now, why did you create Nottingtable?</h5>
+    <p>Well, I did not know that the school's ASO was going to release its timetabling system when I started developing Nottingtable. I just wanted to make a program that can help students to get their teaching timetable in a natural way. I am glad that the school has finally released its official service for teaching calendar though it might make Nottingtable a bit useless. At least, Nottingtable could give students one more choice on getting teaching timetable.</p>
+{% endblock %}

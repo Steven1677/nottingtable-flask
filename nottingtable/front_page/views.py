@@ -61,6 +61,33 @@ def show_staff():
     return render_template('staff.html')
 
 
+@bp.route('/about', methods=('GET',))
+def show_about():
+    """
+    Render about page
+    :return rendered about page
+    """
+    return render_template('about.html')
+
+
+@bp.route('/qna', methods=('GET',))
+def show_qna():
+    """
+    Render Q&A page
+    :return: rendered Q&A page
+    """
+    return render_template('qna.html', official_link=current_app.config['BASE_URL'])
+
+
+@bp.route('/usage', methods=('GET',))
+def show_usage():
+    """
+    Render usage page
+    :return: rendered usage page
+    """
+    return render_template('usage.html')
+
+
 @bp.route('/check', methods=('POST', 'GET'))
 def check_cal():
     """Show the list of all calendar events"""

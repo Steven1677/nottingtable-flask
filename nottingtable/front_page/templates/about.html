@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% set active_page = "about" %}
+{% block title %} About {% endblock %}
+
+{% block content %}
+    <h1 class="text-center">About</h1>
+    <p class="lead text-center">Hello!</p>
+    <p class="text-center">Nottingtable is a web system that allows UNNC students to get their teaching timetable in ical (.ics) format.</p>
+    <p class="text-center">All the data is crawled down from school's timetabling system, which is public on the Internet.</p>
+    <p class="text-center"><b>Please pay attention: it is not the iCalendar system released by the school's Academic Service Office!</b></p>
+{% endblock %}
