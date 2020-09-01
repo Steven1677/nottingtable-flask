@@ -9,21 +9,21 @@ class Config(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # Default url for timetabling service
-    BASE_URL = 'http://timetablingunnc.nottingham.ac.uk:8005/'  # Last '/' cannot be omitted
-    FIRST_MONDAY = arrow.get('2019-09-16')  # YYYY-MM-DD format
+    BASE_URL = 'http://timetablingunnc.nottingham.ac.uk:8017/'  # Last '/' cannot be omitted
+    FIRST_MONDAY = arrow.get('2020-09-14')  # YYYY-MM-DD format
 
     # Default url for year1 group list
     YEAR1_PDF_URL = 'https://www.nottingham.edu.cn/en/academicservices/documents/year-1-student-timetable-1920-spring-semester-20200429v4.pdf'
 
     # integer, the cache lifetime in database, unit: day
-    CACHE_LIFE = 1
+    CACHE_LIFE = 365
 
     # Server domain
     SERVER_NAME = os.environ.get('SERVER_NAME')
 
 
 class ProductionConfig(Config):
-    BASE_URL = 'http://timetablingunnc.nottingham.ac.uk:8005/'
+    BASE_URL = 'http://timetablingunnc.nottingham.ac.uk:8017/'
 
 
 class DevelopmentConfig(Config):

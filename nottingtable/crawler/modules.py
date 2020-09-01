@@ -22,6 +22,6 @@ def get_module_activity(url, module_name, activity):
     def activity_filter(course_dict):
         return course_dict['Activity'] != activity
 
-    target_course, name = extract_text_spread_sheet(url, activity_filter)[0]
+    target_course, _ = extract_text_spread_sheet(url, activity_filter)
 
-    return target_course, name
+    return target_course[0]
