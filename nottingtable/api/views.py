@@ -1,3 +1,4 @@
+import re
 from datetime import timedelta
 import arrow
 
@@ -180,11 +181,22 @@ def show_activity():
 @bp.route('/module', methods=('GET',))
 def show_module():
     name = request.args.get('name')
+    code = request.args.get('code')
 
-    if not name:
-        return jsonify(error='Module Name Not Provided'), 400
+    if not name and not code:
+        return jsonify(error='Module Name/Code Not Provided'), 400
 
-    module_records = Course.query.filter_by(module=name).all()
+    if code and not re.match(r'[a-zA-Z0-9]{8}', code):
+        return jsonify(error='Invalid Module Code'), 400
+
+    if name:
+        module_records = Course.query.filter_by(module=name).all()
+    else:
+        module_records = Course.query\
+                        .filter(Course.activity.contains(code[:3]), Course.activity.contains(code[4:])).all()
+
+    if not module_records:
+        return jsonify(error='Module Not Found'), 404
 
     return jsonify([i.serialize for i in module_records]), 200
 
