@@ -64,7 +64,7 @@ def get_individual_timetable(url, student_id, is_year1=False):
     name = soup.find(text=re.compile('Student Set timetable: .*')).split(': ')[-1]
     if not is_year1:
         name = name.split('/')
-        name = name[-2] + ' ' +  name[-1]
+        name = name[-2] + ' ' + name[-1]
     timetable = soup.find(border='1')
 
     periods = get_time_periods()

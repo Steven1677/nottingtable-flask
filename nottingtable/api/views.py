@@ -1,6 +1,7 @@
 import re
 from datetime import timedelta
 import arrow
+import requests
 
 from flask import Blueprint
 from flask import current_app
@@ -211,3 +212,8 @@ def show_year1_list():
 def show_master_plan_list():
     master_list = MasterPlan.query.all()
     return jsonify({i.plan_name: i.plan_id for i in master_list})
+
+
+@bp.errorhandler(requests.exceptions.ConnectionError)
+def handle_origin_site_down(e):
+    return jsonify(error='Official Website is closed.'), 404

@@ -45,8 +45,11 @@
             <hr>
             <p class="mb-0">Or copy the link: <a href="{{ link }}">{{ link }}</a> to subscribe the calendar!</p>
         </div>
+    {% elif errormsg %}
+        <h1>Oops, something went wrong!</h1>
+        <p class="leading-tight">{{ errormsg }}</p>
     {% else %}
         <h1>Oops, something went wrong!</h1>
-        <p class="leading-tight">It seems the timetable does not exist!</p>
+        <p class="leading-tight">Please go back and check your input again.</p>
     {% endif %}
 {% endblock %}

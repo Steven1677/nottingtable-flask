@@ -1,4 +1,5 @@
 import arrow
+import requests
 
 from flask import Blueprint
 from flask import current_app
@@ -149,3 +150,9 @@ def check_cal():
                            link=link,
                            name=record.sname,
                            timestamp=arrow.get(record.timestamp).to('Asia/Shanghai').humanize())
+
+
+@bp.errorhandler(requests.exceptions.ConnectionError)
+def handle_origin_site_down(e):
+    return render_template('check.html', timetable=None,
+                           errormsg='The school\'s official timetabling is not accessible.')
