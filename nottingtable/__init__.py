@@ -23,6 +23,7 @@ def create_app(development_config=True):
     app.cli.add_command(init_db_command)
     app.cli.add_command(update_course_db)
     app.cli.add_command(update_department_list)
+    app.cli.add_command(update_hex_id)
     app.cli.add_command(update_master_plan_list)
     app.cli.add_command(update_year1_group)
     app.cli.add_command(update_module)
@@ -93,6 +94,14 @@ def update_module():
     update_module_list()
 
 
+@click.command("update-hex-id")
+@with_appcontext
+def update_hex_id():
+    """Re-get hex id list"""
+    from nottingtable.crawler import update_hex_id_list
+    update_hex_id_list()
+
+
 @click.command("init-all")
 @with_appcontext
 def init_all():
@@ -102,9 +111,11 @@ def init_all():
     from nottingtable.crawler import update_year1_group
     from nottingtable.crawler import update_master_plan_list
     from nottingtable.crawler import update_module_list
+    from nottingtable.crawler import update_hex_id_list
     init_db()
     update_department_list()
     update_course_db()
     update_year1_group()
     update_master_plan_list()
     update_module_list()
+    update_hex_id_list()

@@ -18,6 +18,7 @@ from nottingtable.crawler.plans import generate_ics as get_ics
 from nottingtable.crawler.staff import get_staff_timetable
 from nottingtable.crawler.models import User
 from nottingtable.crawler.models import Course
+from nottingtable.crawler.models import HexID
 from nottingtable.crawler.models import Y1Group
 from nottingtable.crawler.models import MasterPlan
 
@@ -47,7 +48,7 @@ def add_or_update(record, key, timetable, name, force_refresh):
     return record
 
 
-def get_record(student_id, force_refresh):
+def _get_record(student_id, force_refresh):
     """
     Get record from cache database
     :param student_id: cache identifier
@@ -85,6 +86,27 @@ def output_timetable(format_type, record, ics_func, ics_name):
         return response
 
 
+def get_record(sid, force_refresh, crawler_func, crawler_args):
+    """
+    Get proper record
+    :param sid: id
+    :param force_refresh: force_refresh flag
+    :param crawler_func: the function the extract information form the crawler part
+    :param crawler_args: args for crawler func
+    :return: record
+    """
+    s_record, force_refresh = _get_record(sid, force_refresh)
+
+    if not s_record or force_refresh:
+        url = current_app.config['BASE_URL']
+        crawler_args['url'] = url
+        list_timetable, name = crawler_func(**crawler_args)
+
+        s_record = add_or_update(s_record, sid, list_timetable, name, force_refresh)
+
+    return s_record
+
+
 @bp.route('/individual/<format_type>', methods=('GET',))
 def get_individual_data(format_type):
     if format_type != 'json' and format_type != 'ical':
@@ -103,16 +125,24 @@ def get_individual_data(format_type):
 
     force_refresh = request.args.get('force-refresh') or 0
 
-    student_record, force_refresh = get_record(student_id, force_refresh)
+    if not is_year1:
+        student_id = HexID.query.filter_by(num_id=student_id).first().hex_id
 
-    if not student_record or force_refresh:
-        url = current_app.config['BASE_URL']
-        try:
-            timetable_list, name = get_individual_timetable(url, student_id, is_year1)
-        except NameError:
-            return jsonify(error='Student ID/Group Not Found'), 404
-
-        student_record = add_or_update(student_record, student_id, timetable_list, name, force_refresh)
+    try:
+        student_record = get_record(student_id, force_refresh,
+                                    get_individual_timetable, {'student_id': student_id, 'is_year1': is_year1})
+    except NameError:
+        return jsonify(error='Student ID/Group Not Found'), 404
+    # student_record, force_refresh = get_record(student_id, force_refresh)
+    #
+    # if not student_record or force_refresh:
+    #     url = current_app.config['BASE_URL']
+    #     try:
+    #         timetable_list, name = get_individual_timetable(url, student_id, is_year1)
+    #     except NameError:
+    #         return jsonify(error='Student ID/Group Not Found'), 404
+    #
+    #     student_record = add_or_update(student_record, student_id, timetable_list, name, force_refresh)
 
     return output_timetable(format_type, student_record, get_ics_individual, student_id)
 
@@ -200,6 +230,25 @@ def show_module():
         return jsonify(error='Module Not Found'), 404
 
     return jsonify([i.serialize for i in module_records]), 200
+
+
+@bp.route('/multiple-arrange', methods=('GET',))
+def arrange():
+    str_participants = request.args.get('p')
+    date = request.args.get('date')
+
+    list_participants = str_participants.split(',')
+    if not list_participants or len(list_participants) > 10:
+        return jsonify(error='Number of participants exceeds the maximum.'), 400
+
+    try:
+        date = arrow.get(date)
+    except arrow.ParserError:
+        return jsonify(error='Invalid date format.'), 400
+
+    for participant in list_participants:
+        record, _ = get_record(participant, 0)
+
 
 
 @bp.route('/year1-list', methods=('GET',))

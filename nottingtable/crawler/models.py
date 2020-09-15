@@ -73,6 +73,15 @@ class Y1Group(db.Model):
         return '<Y1 Group %r>' % self.group
 
 
+class HexID(db.Model):
+    id = db.Column(db.INTEGER, primary_key=True)
+    num_id = db.Column(db.String(50), unique=True, nullable=False)
+    hex_id = db.Column(db.String(64), unique=True, nullable=False)
+
+    def __repr__(self):
+        return '<%r %r>' % self.num_id, self.hex_id
+
+
 class Module(db.Model):
     id = db.Column(db.INTEGER, primary_key=True)
     module_name = db.Column(db.String(50), nullable=False)

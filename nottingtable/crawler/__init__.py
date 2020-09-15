@@ -71,3 +71,13 @@ def update_module_list():
         db.session.add(Module(module_name=name, module_id=m_id))
     db.session.commit()
     click.echo('Module List Updated!')
+
+
+def update_hex_id_list():
+    """Re-get HexID list"""
+    from nottingtable.crawler.models import HexID
+    HexID.__table__.drop(db.engine)
+    HexID.__table__.create(db.engine)
+    from nottingtable.crawler.hexid import get_hex_id_list
+    get_hex_id_list()
+    click.echo('HexID List Updated!')

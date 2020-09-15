@@ -56,17 +56,15 @@ def get_individual_timetable(url, student_id, is_year1=False):
     else:
         url = url + 'reporting/individual;Student+Sets;id;{}?template=Student+Set+Individual' \
                     '&weeks=1-52&days=1-7&periods=1-32'.format(student_id)
-
     res = requests.get(url)
     if res.status_code != 200:
         raise NameError('Student ID Not Found.')
     soup = BeautifulSoup(res.text, 'lxml')
-    name = soup.find(text=re.compile('Student Set timetable: .*')).split(': ')[-1]
+    name = soup.find('span', class_='header-1-1-1').get_text()
     if not is_year1:
         name = name.split('/')
         name = name[-2] + ' ' + name[-1]
-    timetable = soup.find(border='1')
-
+    timetable = soup.find(class_='grid-border-args')
     periods = get_time_periods()
     timetable_list = []
     is_time_period = True
@@ -89,12 +87,12 @@ def get_individual_timetable(url, student_id, is_year1=False):
                     continue
                 assert td['rowspan'] == '1'
                 course_info = td.find_all('table')
-                activity_id = course_info[0].tr.td.font.get_text().replace('  ', ' ')
-                course_id = course_info[1].tr.td.font.get_text()
+                activity_id = course_info[0].tr.td.get_text().replace('  ', ' ')
+                course_id = course_info[1].tr.td.get_text()
                 third_row_info = course_info[2].tr.find_all('td')
-                room = third_row_info[0].font.get_text()
-                staff = third_row_info[1].font.get_text()
-                weeks = third_row_info[2].font.get_text()
+                room = third_row_info[0].get_text()
+                staff = third_row_info[1].get_text()
+                weeks = third_row_info[2].get_text()
                 start_time = periods[time_period_index]
                 time_period_index = time_period_index + int(td['colspan'])
                 end_time = periods[time_period_index]

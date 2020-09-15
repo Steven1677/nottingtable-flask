@@ -15,8 +15,8 @@ def extract_text_spread_sheet(url, exclude_filter):
         raise NameError('Course not Found')
     courses = resp.text
     courses_soup = BeautifulSoup(courses, 'lxml')
-    name = courses_soup.find('b').get_text()
-    courses_tables = courses_soup.find_all(border='1')
+    name = courses_soup.find('span', class_='header-5-0-0').get_text()
+    courses_tables = courses_soup.find_all(border='t')
     fields = []
     course_list = []
     for courses_table in courses_tables:

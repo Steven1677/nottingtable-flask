@@ -9,10 +9,11 @@ from flask import redirect
 from flask import url_for
 
 from nottingtable.api.views import add_or_update
-from nottingtable.api.views import get_record
+from nottingtable.api.views import _get_record
 from nottingtable.crawler.individual import get_individual_timetable
 from nottingtable.crawler.plans import get_plan_textspreadsheet
 from nottingtable.crawler.staff import get_staff_timetable
+from nottingtable.crawler.models import HexID
 from nottingtable.crawler.models import Y1Group
 from nottingtable.crawler.models import MasterPlan
 
@@ -115,7 +116,7 @@ def check_cal():
 
     force_refresh = data.get('force-refresh')
     student_id = data.get('id') or data.get('group') or data.get('plan') or data.get('name')
-    record, force_refresh = get_record(student_id, force_refresh)
+    record, force_refresh = _get_record(student_id, force_refresh)
     fields = ['Activity', 'Module', 'Day', 'Staff', 'Start', 'End', 'Weeks']
 
     if force_refresh:
@@ -127,6 +128,7 @@ def check_cal():
                 return render_template('check.html', timetable=None)
         elif data['type'] == 'year-24':
             try:
+                student_id = HexID.query.filter_by(num_id=student_id).first().hex_id
                 timetable, name = get_individual_timetable(url, student_id, False)
             except NameError:
                 return render_template('check.html', timetable=None)
