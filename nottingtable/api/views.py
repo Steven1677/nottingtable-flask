@@ -10,6 +10,7 @@ from flask import request
 from flask import make_response
 
 from nottingtable import db
+from nottingtable.crawler.ics_helper import weeks_generator
 from nottingtable.crawler.individual import validate_student_id
 from nottingtable.crawler.individual import get_individual_timetable
 from nottingtable.crawler.individual import generate_ics as get_ics_individual
@@ -133,16 +134,6 @@ def get_individual_data(format_type):
                                     get_individual_timetable, {'student_id': student_id, 'is_year1': is_year1})
     except NameError:
         return jsonify(error='Student ID/Group Not Found'), 404
-    # student_record, force_refresh = get_record(student_id, force_refresh)
-    #
-    # if not student_record or force_refresh:
-    #     url = current_app.config['BASE_URL']
-    #     try:
-    #         timetable_list, name = get_individual_timetable(url, student_id, is_year1)
-    #     except NameError:
-    #         return jsonify(error='Student ID/Group Not Found'), 404
-    #
-    #     student_record = add_or_update(student_record, student_id, timetable_list, name, force_refresh)
 
     return output_timetable(format_type, student_record, get_ics_individual, student_id)
 
@@ -158,16 +149,11 @@ def get_plan_data(format_type):
 
     force_refresh = request.args.get('force-refresh') or 0
 
-    student_record, force_refresh = get_record(plan_id, force_refresh)
-
-    if not student_record or force_refresh:
-        url = current_app.config['BASE_URL']
-        try:
-            timetable_list, web_name = get_plan_textspreadsheet(url, plan_id)
-        except NameError:
-            return jsonify(error='Plan ID Not Found'), 404
-
-        student_record = add_or_update(student_record, plan_id, timetable_list, web_name, force_refresh)
+    try:
+        student_record = get_record(plan_id, force_refresh,
+                                    get_plan_textspreadsheet, {'plan_id': plan_id})
+    except NameError:
+        return jsonify(error='Plan ID Not Found'), 404
 
     return output_timetable(format_type, student_record, get_ics, plan_id)
 
@@ -183,16 +169,11 @@ def get_staff_data(format_type):
 
     force_refresh = request.args.get('force-refresh') or 0
 
-    staff_record, force_refresh = get_record(name, force_refresh)
-
-    if not staff_record or force_refresh:
-        url = current_app.config['BASE_URL']
-        try:
-            timetable_list, web_name = get_staff_timetable(url, name)
-        except NameError:
-            return jsonify(error='Staff Name Not Found'), 404
-
-        staff_record = add_or_update(staff_record, name, timetable_list, web_name, force_refresh)
+    try:
+        staff_record = get_record(name, force_refresh,
+                                  get_staff_timetable, {'name': name})
+    except NameError:
+        return jsonify(error='Staff Name Not Found'), 404
 
     return output_timetable(format_type, staff_record, get_ics, name)
 
@@ -223,8 +204,8 @@ def show_module():
     if name:
         module_records = Course.query.filter_by(module=name).all()
     else:
-        module_records = Course.query\
-                        .filter(Course.activity.contains(code[:3]), Course.activity.contains(code[4:])).all()
+        module_records = Course.query \
+            .filter(Course.activity.contains(code[:3]), Course.activity.contains(code[4:])).all()
 
     if not module_records:
         return jsonify(error='Module Not Found'), 404
@@ -232,9 +213,9 @@ def show_module():
     return jsonify([i.serialize for i in module_records]), 200
 
 
-@bp.route('/multiple-arrange', methods=('GET',))
-def arrange():
-    str_participants = request.args.get('p')
+@bp.route('/multiple-schedule', methods=('GET',))
+def multiple_schedule():
+    str_participants = request.args.get('people')
     date = request.args.get('date')
 
     list_participants = str_participants.split(',')
@@ -242,13 +223,57 @@ def arrange():
         return jsonify(error='Number of participants exceeds the maximum.'), 400
 
     try:
-        date = arrow.get(date)
+        date = arrow.get(date, 'YYYY-MM-DD')
     except arrow.ParserError:
         return jsonify(error='Invalid date format.'), 400
 
-    for participant in list_participants:
-        record, _ = get_record(participant, 0)
+    first_week = current_app.config['FIRST_MONDAY'].isocalendar()[1]
+    date_week = date.isocalendar()[1]
+    semester_week = date_week - first_week + 1
+    week_day = arrow.locales.EnglishLocale.day_abbreviations[date.isocalendar()[2]]
 
+    # From 8:00 to 22:00, 30 minutes per period
+    time_period = [True] * 28
+
+    for participant in list_participants:
+        if 'Year 1' in participant:
+            is_year1 = True
+        else:
+            is_year1 = False
+        try:
+            record = get_record(participant, 0,
+                                get_individual_timetable, {'is_year1': is_year1, 'student_id': participant})
+        except NameError:
+            return jsonify(error='{} is Invalid'.format(participant)), 400
+
+        timetable = record.timetable
+        for course in timetable:
+            if course['Day'] != week_day:
+                continue
+            if semester_week not in list(weeks_generator(course['Weeks'])):
+                continue
+            start_time = arrow.get(course['Start'], 'H:mm')
+            start_time_index = (start_time.hour - 8) * 2 + int(start_time.minute / 30)
+            end_time = arrow.get(course['End'], 'H:mm')
+            end_time_index = (end_time.hour - 8) * 2 + int(end_time.minute / 30)
+            for i in range(start_time_index, end_time_index):
+                time_period[i] = False
+
+    def time_index_to_time(x):
+        return str(x // 2 + 8) + ':00' if x % 2 == 0 else str(x // 2 + 8) + ':30'
+
+    res_time_period = []
+    cur_start = -1
+    for index, flag in enumerate(time_period):
+        if flag and cur_start == -1:
+            cur_start = index
+        elif not flag and cur_start != -1:
+            res_time_period.append(time_index_to_time(cur_start) + '-' + time_index_to_time(index))
+            cur_start = -1
+    if cur_start != -1:
+        res_time_period.append(time_index_to_time(cur_start) + '-' + time_index_to_time(28))
+
+    return jsonify(free_time=res_time_period)
 
 
 @bp.route('/year1-list', methods=('GET',))
