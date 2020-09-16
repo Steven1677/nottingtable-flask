@@ -53,7 +53,7 @@ class User(db.Model):
                           default=datetime.utcnow, onupdate=datetime.utcnow)
 
     def __repr__(self):
-        return '<User %r>' % self.student_id
+        return '<User %r>' % self.sid
 
 
 class MasterPlan(db.Model):

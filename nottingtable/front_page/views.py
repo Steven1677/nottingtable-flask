@@ -128,8 +128,8 @@ def check_cal():
                 return render_template('check.html', timetable=None)
         elif data['type'] == 'year-24':
             try:
-                student_id = HexID.query.filter_by(num_id=student_id).first().hex_id
-                timetable, name = get_individual_timetable(url, student_id, False)
+                student_hex_id = HexID.query.filter_by(num_id=student_id).first().hex_id
+                timetable, name = get_individual_timetable(url, student_hex_id, False)
             except NameError:
                 return render_template('check.html', timetable=None)
         elif data['type'] == 'plan':
