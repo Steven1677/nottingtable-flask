@@ -8,7 +8,7 @@ class Course(db.Model):
     activity = db.Column(db.String(256), nullable=False)
     module = db.Column(db.String(256), nullable=False)
     type = db.Column(db.String(30), nullable=False)
-    day = db.Column(db.String(10), nullable=False)
+    day = db.Column(db.String(70), nullable=False)
     start = db.Column(db.String(10), nullable=False)
     end = db.Column(db.String(10), nullable=False)
     duration = db.Column(db.String(10), nullable=False)
