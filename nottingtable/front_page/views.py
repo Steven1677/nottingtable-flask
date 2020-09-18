@@ -123,7 +123,8 @@ def check_cal():
         url = current_app.config['BASE_URL']
         if data['type'] == 'year-1':
             try:
-                timetable, name = get_individual_timetable(url, student_id, True)
+                student_hex_id = HexID.query.filter_by(num_id=student_id).first().hex_id
+                timetable, name = get_individual_timetable(url, student_hex_id, True)
             except NameError:
                 return render_template('check.html', timetable=None)
         elif data['type'] == 'year-24':

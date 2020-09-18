@@ -126,12 +126,11 @@ def get_individual_data(format_type):
 
     force_refresh = request.args.get('force-refresh') or 0
 
-    if not is_year1:
-        student_id = HexID.query.filter_by(num_id=student_id).first().hex_id
+    student_hex_id = HexID.query.filter_by(num_id=student_id).first().hex_id
 
     try:
         student_record = get_record(student_id, force_refresh,
-                                    get_individual_timetable, {'student_id': student_id, 'is_year1': is_year1})
+                                    get_individual_timetable, {'student_id': student_hex_id, 'is_year1': is_year1})
     except NameError:
         return jsonify(error='Student ID/Group Not Found'), 404
 

@@ -23,7 +23,7 @@ def validate_student_id(student_id, is_year1=False):
         else:
             return True
     else:
-        if not re.search(r'[ABC]-\d{2}', student_id):
+        if not re.search(r'[ABC]\d{2}', student_id):
             return False
         else:
             return True
@@ -50,12 +50,8 @@ def get_individual_timetable(url, student_id, is_year1=False):
     :param is_year1: whether the student is year 1 student
     :return: timetable dict for the student
     """
-    if is_year1:
-        url = url + 'reporting/Individual;Student+Sets;name;{}?template=Student+Set+Individual' \
-                    '&weeks=1-52&days=1-7&periods=1-32'.format(student_id)
-    else:
-        url = url + 'reporting/individual;Student+Sets;id;{}?template=Student+Set+Individual' \
-                    '&weeks=1-52&days=1-7&periods=1-32'.format(student_id)
+    url = url + 'reporting/individual;Student+Sets;id;{}?template=Student+Set+Individual' \
+                '&weeks=1-52&days=1-7&periods=1-32'.format(student_id)
     res = requests.get(url)
     if res.status_code != 200:
         raise NameError('Student ID Not Found.')

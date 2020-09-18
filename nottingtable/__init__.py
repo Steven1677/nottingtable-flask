@@ -115,7 +115,7 @@ def init_all():
     init_db()
     update_department_list()
     update_course_db()
+    update_hex_id_list()
     update_year1_group()
     update_master_plan_list()
     update_module_list()
-    update_hex_id_list()
