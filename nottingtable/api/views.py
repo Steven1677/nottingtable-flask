@@ -131,7 +131,7 @@ def get_individual_data(format_type):
     try:
         student_record = get_record(student_id, force_refresh,
                                     get_individual_timetable, {'student_id': student_hex_id, 'is_year1': is_year1})
-    except NameError:
+    except (NameError, AttributeError):
         return jsonify(error='Student ID/Group Not Found'), 404
 
     return output_timetable(format_type, student_record, get_ics_individual, student_id)
