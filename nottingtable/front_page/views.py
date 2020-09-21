@@ -13,7 +13,7 @@ from nottingtable.api.views import _get_record
 from nottingtable.crawler.individual import get_individual_timetable
 from nottingtable.crawler.plans import get_plan_textspreadsheet
 from nottingtable.crawler.staff import get_staff_timetable
-from nottingtable.crawler.models import HexID
+from nottingtable.crawler.hexid import get_hex_id
 from nottingtable.crawler.models import Y1Group
 from nottingtable.crawler.models import MasterPlan
 
@@ -123,13 +123,13 @@ def check_cal():
         url = current_app.config['BASE_URL']
         if data['type'] == 'year-1':
             try:
-                student_hex_id = HexID.query.filter_by(num_id=student_id).first().hex_id
+                student_hex_id = get_hex_id(student_id)
                 timetable, name = get_individual_timetable(url, student_hex_id, True)
             except (NameError, AttributeError):  # AttributeError for hex record not exist
                 return render_template('check.html', timetable=None)
         elif data['type'] == 'year-24':
             try:
-                student_hex_id = HexID.query.filter_by(num_id=student_id).first().hex_id
+                student_hex_id = get_hex_id(student_id)
                 timetable, name = get_individual_timetable(url, student_hex_id, False)
             except (NameError, AttributeError):  # AttributeError for hex record not exist
                 return render_template('check.html', timetable=None)

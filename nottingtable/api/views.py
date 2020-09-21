@@ -17,9 +17,9 @@ from nottingtable.crawler.individual import generate_ics as get_ics_individual
 from nottingtable.crawler.plans import get_plan_textspreadsheet
 from nottingtable.crawler.plans import generate_ics as get_ics
 from nottingtable.crawler.staff import get_staff_timetable
+from nottingtable.crawler.hexid import get_hex_id
 from nottingtable.crawler.models import User
 from nottingtable.crawler.models import Course
-from nottingtable.crawler.models import HexID
 from nottingtable.crawler.models import Y1Group
 from nottingtable.crawler.models import MasterPlan
 
@@ -126,7 +126,7 @@ def get_individual_data(format_type):
 
     force_refresh = request.args.get('force-refresh') or 0
 
-    student_hex_id = HexID.query.filter_by(num_id=student_id).first().hex_id
+    student_hex_id = get_hex_id(student_id)
 
     try:
         student_record = get_record(student_id, force_refresh,
