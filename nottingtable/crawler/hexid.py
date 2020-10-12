@@ -14,14 +14,18 @@ def get_hex_id_list(url='http://unnc-app.scientia.com.cn/api/Resource/StudentSet
     """
     res = requests.get(url, headers={'Referer': 'http://unnc-tcs.scientia.com.cn/'})
     list_res = json.loads(res.content)
+    dist_id = {}
     for id_entry in list_res:
         hex_id = id_entry['hostKey']
         description = id_entry['description'].split(' - ')
         num_id = description[-1]
         if not num_id or len(hex_id) < 32:
             continue
-        record = HexID(num_id=num_id, hex_id=hex_id)
-        db.session.add(record)
+        dist_id[num_id] = hex_id
+
+    for num_id, hex_id in dist_id.items():
+        db.session.add(HexID(num_id=num_id, hex_id=hex_id))
+
     db.session.commit()
 
 
