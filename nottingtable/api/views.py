@@ -108,6 +108,44 @@ def get_record(sid, force_refresh, crawler_func, crawler_args):
     return s_record
 
 
+def get_current_semester():
+    """:return 1 or 2"""
+    month = arrow.utcnow().date().month
+    return 2 if 2 <= month <= 8 else 1
+
+
+def get_max_week_number(course):
+    """
+    Get the max week number from a course object
+    :param course: course object
+    :return: last week number included in the course
+    """
+    weeks = course.get("Weeks")
+    last_period = weeks.split(', ')[-1]
+    if '-' not in last_period:
+        return int(last_period)
+    else:
+        return int(last_period.split('-')[-1])
+
+
+def filter_semester(semester, record):
+    """
+    Filter record timetable via semester
+    :param semester: 1 or 2 or other (treated as all)
+    :param record: a timetable list
+    :return: a timetable list
+    """
+    def filter_func(course_obj):
+        if semester == 1:
+            return get_max_week_number(course_obj) < 20
+        elif semester == 2:
+            return get_max_week_number(course_obj) > 20
+        else:
+            return True
+
+    return list(filter(filter_func, record))
+
+
 @bp.route('/individual/<format_type>', methods=('GET',))
 def get_individual_data(format_type):
     if format_type != 'json' and format_type != 'ical':
@@ -128,12 +166,17 @@ def get_individual_data(format_type):
 
     student_hex_id = get_hex_id(student_id)
 
+    semester = request.args.get('semester') or get_current_semester()
+    if semester != 1 and semester != 2 and semester != 3:
+        semester = get_current_semester()
+
     try:
         student_record = get_record(student_id, force_refresh,
                                     get_individual_timetable, {'student_id': student_hex_id, 'is_year1': is_year1})
     except (NameError, AttributeError):
         return jsonify(error='Student ID/Group Not Found'), 404
 
+    student_record.timetable = filter_semester(semester, student_record.timetable)
     return output_timetable(format_type, student_record, get_ics_individual, student_id)
 
 
@@ -148,11 +191,17 @@ def get_plan_data(format_type):
 
     force_refresh = request.args.get('force-refresh') or 0
 
+    semester = request.args.get('semester') or get_current_semester()
+    if semester != 1 and semester != 2 and semester != 3:
+        semester = get_current_semester()
+
     try:
         student_record = get_record(plan_id, force_refresh,
                                     get_plan_textspreadsheet, {'plan_id': plan_id})
     except NameError:
         return jsonify(error='Plan ID Not Found'), 404
+
+    student_record.timetable = filter_semester(semester, student_record.timetable)
 
     return output_timetable(format_type, student_record, get_ics, plan_id)
 
@@ -168,12 +217,17 @@ def get_staff_data(format_type):
 
     force_refresh = request.args.get('force-refresh') or 0
 
+    semester = request.args.get('semester') or get_current_semester()
+    if semester != 1 and semester != 2 and semester != 3:
+        semester = get_current_semester()
+
     try:
         staff_record = get_record(name, force_refresh,
                                   get_staff_timetable, {'name': name})
     except NameError:
         return jsonify(error='Staff Name Not Found'), 404
 
+    staff_record.timetable = filter_semester(semester, staff_record.timetable)
     return output_timetable(format_type, staff_record, get_ics, name)
 
 

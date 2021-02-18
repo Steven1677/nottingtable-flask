@@ -10,6 +10,7 @@ from flask import url_for
 
 from nottingtable.api.views import add_or_update
 from nottingtable.api.views import _get_record
+from nottingtable.api.views import filter_semester, get_current_semester
 from nottingtable.crawler.individual import get_individual_timetable
 from nottingtable.crawler.plans import get_plan_textspreadsheet
 from nottingtable.crawler.staff import get_staff_timetable
@@ -147,6 +148,7 @@ def check_cal():
             return render_template('check.html', timetable=None)
         record = add_or_update(record, student_id, timetable, name, force_refresh)
     link = get_link()
+    record.timetable = filter_semester(get_current_semester(), record.timetable)
     return render_template('check.html',
                            fields=fields,
                            timetable=record.timetable,
