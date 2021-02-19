@@ -109,7 +109,10 @@ def get_record(sid, force_refresh, crawler_func, crawler_args):
 
 
 def get_current_semester():
-    """:return 1 or 2"""
+    """
+    Get the current semester via month
+    :return 1 or 2
+    """
     month = arrow.utcnow().date().month
     return 2 if 2 <= month <= 8 else 1
 

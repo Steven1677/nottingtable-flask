@@ -13,7 +13,7 @@ class Config(object):
     FIRST_MONDAY = arrow.get('2020-09-14')  # YYYY-MM-DD format
 
     # Default url for year1 group list
-    YEAR1_PDF_URL = 'https://www.nottingham.edu.cn/en/academicservices/documents/year-1-student-timetable-1920-spring-semester-20200429v4.pdf'
+    YEAR1_PDF_URL = 'https://www.nottingham.edu.cn/en/academicservices/documents/2020-2021-s2-year-1-student-timetable.pdf'
 
     # integer, the cache lifetime in database, unit: day
     CACHE_LIFE = 365

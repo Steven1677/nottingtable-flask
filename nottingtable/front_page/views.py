@@ -124,8 +124,8 @@ def check_cal():
         url = current_app.config['BASE_URL']
         if data['type'] == 'year-1':
             try:
-                student_hex_id = get_hex_id(student_id)
-                timetable, name = get_individual_timetable(url, student_hex_id, True)
+                # student_hex_id = get_hex_id(student_id)
+                timetable, name = get_individual_timetable(url, student_id, True)
             except (NameError, AttributeError):  # AttributeError for hex record not exist
                 return render_template('check.html', timetable=None)
         elif data['type'] == 'year-24':
