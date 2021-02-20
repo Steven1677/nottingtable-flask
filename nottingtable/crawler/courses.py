@@ -65,7 +65,18 @@ def get_department_courses(url, dept_id, dept_name):
 
     if not course_list:
         return dept_name + ' is empty!'
+
+    duplicated = list()
     for course in course_list:
-        add_course(course)
+        if ',' in course['Day']:
+            if all([ele["Activity"] != course["Activity"] for ele in duplicated]):
+                days = course['Day'].split(',')
+                for day in days:
+                    course_tmp = course
+                    course_tmp['Day'] = day
+                    add_course(course_tmp)
+                duplicated.append(course)
+        else:
+            add_course(course)
     db.session.commit()
     return dept_name + ' is finished.'

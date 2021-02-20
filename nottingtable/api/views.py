@@ -167,7 +167,7 @@ def get_individual_data(format_type):
 
     force_refresh = request.args.get('force-refresh') or 0
 
-    student_hex_id = get_hex_id(student_id)
+    student_hex_id = student_id if is_year1 else get_hex_id(student_id)
 
     semester = request.args.get('semester') or get_current_semester()
     if semester != 1 and semester != 2 and semester != 3:
