@@ -29,6 +29,18 @@ def validate_student_id(student_id, is_year1=False):
             return True
 
 
+def validate_hex_id(hex_id):
+    """
+    Get and verify hex id
+    :param hex_id:
+    :return: a boolean
+    """
+    if re.match(r'([0-9A-F]{32}).*', hex_id):
+        return True
+    else:
+        return False
+
+
 def get_time_periods():
     """
     Generate time periods list from 8:00 to 22:00
@@ -59,7 +71,7 @@ def get_individual_timetable(url, student_id, is_year1=False):
     name = soup.find('span', class_='header-1-1-1').get_text()
     if not is_year1:
         name = name.split('/')
-        name = name[-2] + ' ' + name[-1]
+        name = name[-3] + ' ' + name[-2]
     timetable = soup.find(class_='grid-border-args')
     periods = get_time_periods()
     timetable_list = []

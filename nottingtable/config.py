@@ -9,8 +9,8 @@ class Config(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # Default url for timetabling service
-    BASE_URL = 'http://timetablingunnc.nottingham.ac.uk:8017/'  # Last '/' cannot be omitted
-    FIRST_MONDAY = arrow.get('2020-09-14')  # YYYY-MM-DD format
+    BASE_URL = 'http://timetablingunnc.nottingham.ac.uk:8005/'  # Last '/' cannot be omitted
+    FIRST_MONDAY = arrow.get('2021-09-13')  # YYYY-MM-DD format
 
     # Default url for year1 group list
     YEAR1_PDF_URL = 'https://www.nottingham.edu.cn/en/academicservices/documents/2020-2021-s2-year-1-student-timetable.pdf'
@@ -23,7 +23,7 @@ class Config(object):
 
 
 class ProductionConfig(Config):
-    BASE_URL = 'http://timetablingunnc.nottingham.ac.uk:8017/'
+    BASE_URL = 'http://timetablingunnc.nottingham.ac.uk:8005/'
 
 
 class DevelopmentConfig(Config):

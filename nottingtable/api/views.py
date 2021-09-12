@@ -11,7 +11,7 @@ from flask import make_response
 
 from nottingtable import db
 from nottingtable.crawler.ics_helper import weeks_generator
-from nottingtable.crawler.individual import validate_student_id
+from nottingtable.crawler.individual import validate_student_id, validate_hex_id
 from nottingtable.crawler.individual import get_individual_timetable
 from nottingtable.crawler.individual import generate_ics as get_ics_individual
 from nottingtable.crawler.plans import get_plan_textspreadsheet
@@ -151,23 +151,27 @@ def filter_semester(semester, record):
 
 @bp.route('/individual/<format_type>', methods=('GET',))
 def get_individual_data(format_type):
+    is_hex = False
+    is_year1 = False
     if format_type != 'json' and format_type != 'ical':
         return jsonify(error='Not Found'), 404
     if request.args.get('id'):
         student_id = request.args.get('id')
-        is_year1 = False
     elif request.args.get('group'):
         student_id = request.args.get('group')
         is_year1 = True
+    elif request.args.get('hex'):
+        student_id = request.args.get('hex')
+        is_hex = True
     else:
-        return jsonify(error='Student ID or Group Name Not Provided'), 400
+        return jsonify(error='Student ID or Group Name or Hex Not Provided'), 400
 
-    if not validate_student_id(student_id, is_year1=is_year1):
-        return jsonify(error='Group Name Invalid'), 400
+    if not (validate_student_id(student_id, is_year1=is_year1) or validate_hex_id(student_id)):
+        return jsonify(error='Student ID or Group Name or Hex Invalid'), 400
 
     force_refresh = request.args.get('force-refresh') or 0
 
-    student_hex_id = student_id if is_year1 else get_hex_id(student_id)
+    student_hex_id = student_id if (is_year1 or is_hex) else get_hex_id(student_id)
 
     semester = request.args.get('semester') or get_current_semester()
     if semester != 1 and semester != 2 and semester != 3:

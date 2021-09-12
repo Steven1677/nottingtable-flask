@@ -23,7 +23,8 @@ def create_app(development_config=True):
     app.cli.add_command(init_db_command)
     app.cli.add_command(update_course_db)
     app.cli.add_command(update_department_list)
-    app.cli.add_command(update_hex_id)
+    # Hex list is not available anymore
+    # app.cli.add_command(update_hex_id)
     app.cli.add_command(update_master_plan_list)
     app.cli.add_command(update_year1_group)
     app.cli.add_command(update_module)
@@ -115,7 +116,8 @@ def init_all():
     init_db()
     update_department_list()
     update_course_db()
-    update_hex_id_list()
+    # Hex list is not available anymore
+    # update_hex_id_list()
     update_year1_group()
     update_master_plan_list()
     update_module_list()

@@ -1,10 +1,10 @@
-Flask==1.1.2
-requests==2.25.1
-beautifulsoup4==4.9.3
-arrow==0.17.0
-click==7.1.2
+Flask==2.0.1
+requests==2.26.0
+beautifulsoup4==4.10.0
+arrow==1.1.1
+click==8.0.1
 icalendar==4.0.7
-lxml==4.6.2
+lxml==4.6.3
 PyMySQL==1.0.2
 pdfminer.six==20201018
-Flask-SQLAlchemy==2.4.4
+Flask-SQLAlchemy==2.5.1

@@ -116,7 +116,7 @@ def check_cal():
         return render_template('check.html', timetable=None)
 
     force_refresh = data.get('force-refresh')
-    student_id = data.get('id') or data.get('group') or data.get('plan') or data.get('name')
+    student_id = data.get('hex') or data.get('group') or data.get('plan') or data.get('name')
     record, force_refresh = _get_record(student_id, force_refresh)
     fields = ['Activity', 'Module', 'Day', 'Staff', 'Start', 'End', 'Weeks']
 
@@ -130,7 +130,9 @@ def check_cal():
                 return render_template('check.html', timetable=None)
         elif data['type'] == 'year-24':
             try:
-                student_hex_id = get_hex_id(student_id)
+                # The user input should be hex id now
+                # student_hex_id = get_hex_id(student_id)
+                student_hex_id = hex
                 timetable, name = get_individual_timetable(url, student_hex_id, False)
             except (NameError, AttributeError):  # AttributeError for hex record not exist
                 return render_template('check.html', timetable=None)
