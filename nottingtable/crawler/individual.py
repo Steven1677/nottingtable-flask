@@ -71,7 +71,10 @@ def get_individual_timetable(url, student_id, is_year1=False):
     name = soup.find('span', class_='header-1-1-1').get_text()
     if not is_year1:
         name = name.split('/')
-        name = name[-3] + ' ' + name[-2]
+        try:
+            name = name[-3] + ' ' + name[-2]
+        except IndexError:
+            pass
     timetable = soup.find(class_='grid-border-args')
     periods = get_time_periods()
     timetable_list = []
