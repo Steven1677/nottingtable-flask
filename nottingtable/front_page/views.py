@@ -131,9 +131,8 @@ def check_cal():
         elif data['type'] == 'year-24':
             try:
                 # The user input should be hex id now
-                # student_hex_id = get_hex_id(student_id)
-                student_hex_id = hex
-                timetable, name = get_individual_timetable(url, student_hex_id, False)
+                # student_id = get_hex_id(student_id)
+                timetable, name = get_individual_timetable(url, student_id, False)
             except (NameError, AttributeError):  # AttributeError for hex record not exist
                 return render_template('check.html', timetable=None)
         elif data['type'] == 'plan':
