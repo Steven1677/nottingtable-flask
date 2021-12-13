@@ -4,7 +4,7 @@ beautifulsoup4==4.10.0
 arrow==1.1.1
 click==8.0.1
 icalendar==4.0.7
-lxml==4.6.3
+lxml==4.6.5
 PyMySQL==1.0.2
 pdfminer.six==20201018
 Flask-SQLAlchemy==2.5.1
