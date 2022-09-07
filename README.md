@@ -1,3 +1,6 @@
+# Archived
+Due to frequent changes made from the timetabling service side, this project is no longer working for the latest version.
+
 # Nottingtable
 Nottingtable is a web system that allows UNNC students to 
 get their teaching timetable in ical (.ics) format.
